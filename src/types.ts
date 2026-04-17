@@ -1,0 +1,28 @@
+export type Screen =
+  | 'splash'
+  | 'onboarding'
+  | 'role'
+  | 'login'
+  | 'register'
+  | 'register-doctor'
+  | 'doctor-home'
+  | 'doctor-records'
+  | 'doctor-profile'
+  | 'doctor-settings'
+  | 'patient-home'
+  | 'patient-profile'
+  | 'patient-search'
+  | 'clinics'
+  | 'notifications'
+  | 'support'
+  | 'book-appointment'
+  | 'booking-success'
+  | 'patient-appointments'
+  | 'patient-settings'
+  | 'patient-account-settings'
+  | 'admin-home'
+  | 'admin-doctors'
+  | 'admin-patients'
+  | 'admin-clinic';
+
+export type Role = 'doctor' | 'patient' | 'admin';
