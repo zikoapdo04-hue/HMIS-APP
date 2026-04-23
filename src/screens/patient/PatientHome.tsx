@@ -89,26 +89,28 @@ export function PatientHome({ setScreen }: Props) {
                 onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
                 onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
               >
-                {/* Doctor illustration */}
+                {/* Full doctor illustration */}
                 <img
                   src={ILL}
                   alt={s.name}
                   style={{
                     position: 'absolute',
-                    top: 0, left: 0, right: 0,
+                    top: 0, left: 0,
                     width: '100%',
-                    height: '78%',
-                    objectFit: 'cover',
-                    objectPosition: 'top center',
+                    height: '100%',
+                    objectFit: 'contain',
+                    objectPosition: 'center top',
+                    padding: '12px 8px 44px 8px',
                   }}
                 />
-                {/* Label bar */}
+                {/* Label bar pinned at bottom */}
                 <div style={{
-                  position: 'relative', zIndex: 1,
-                  width: '100%',
+                  position: 'absolute',
+                  bottom: 0, left: 0, right: 0,
                   padding: '10px 0',
                   textAlign: 'center',
-                  background: 'rgba(0,0,0,0.12)',
+                  background: 'rgba(0,0,0,0.18)',
+                  zIndex: 1,
                 }}>
                   <span style={{ fontFamily: 'Cairo', fontSize: '22px', fontWeight: 800, color: 'white' }}>
                     {s.name}
