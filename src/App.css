@@ -2918,7 +2918,7 @@ html, body {
 .pp-patient-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 12px;
   padding: 0 4px;
 }
@@ -2927,7 +2927,7 @@ html, body {
   align-items: center;
   gap: 16px;
   width: 100%;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 .pp-avatar {
   width: 80px; height: 80px;
@@ -2942,7 +2942,7 @@ html, body {
   color: #148C9E;
 }
 .pp-contact-btn {
-  align-self: flex-end;
+  align-self: flex-start;
   background: none; border: none;
   font-family: 'Cairo', sans-serif;
   font-size: 20px; font-weight: 800;
@@ -2983,7 +2983,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 14px;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 .pp-card-avatar {
   width: 60px; height: 60px;
@@ -2993,7 +2993,7 @@ html, body {
 }
 .pp-card-doctor-info {
   display: flex; flex-direction: column;
-  align-items: flex-end; gap: 2px;
+  align-items: flex-start; gap: 2px;
 }
 .pp-card-doctor-name {
   font-family: 'Cairo', sans-serif;
