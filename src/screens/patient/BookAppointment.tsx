@@ -1,25 +1,27 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
+import type { DoctorInfo } from './DoctorDetail';
 
-interface Props { setScreen: (s: Screen) => void }
+interface Props { setScreen: (s: Screen) => void; doctor?: DoctorInfo | null }
 
 const TIME_SLOTS = ['04:00PM','04:30PM','05:00PM','05:30PM','06:00PM','06:30PM','07:00PM','07:30PM'];
 // Slots already taken
 const TAKEN = new Set(['04:00PM','05:00PM','07:00PM']);
 
-export function BookAppointment({ setScreen }: Props) {
+export function BookAppointment({ setScreen, doctor }: Props) {
   const { user } = useAuth();
   const [selectedTime, setSelectedTime] = useState('04:30PM');
   const [symptoms, setSymptoms]         = useState('');
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
 
-  // Doctor info mockup
-  const DOCTOR_NAME    = 'خالد توفيق';
-  const SPECIALTY      = 'جراحة عامة';
-  const RATING         = 5;
+  // Use passed doctor or fallback mock
+  const DOCTOR_NAME    = doctor?.name      ?? 'خالد توفيق';
+  const SPECIALTY      = doctor?.specialty ?? 'جراحة عامة';
+  const RATING         = doctor?.rating    ?? 5;
   const AVAILABLE_DAYS = ['الاثنين', 'الاربع'];
+  const avatarUrl      = `https://ui-avatars.com/api/?name=${encodeURIComponent(DOCTOR_NAME)}&background=random`;
 
   const today = new Date();
   const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
@@ -49,7 +51,7 @@ export function BookAppointment({ setScreen }: Props) {
               <span className="bk-doc-name">{DOCTOR_NAME}</span>
               <span className="bk-doc-spec">{SPECIALTY}</span>
             </div>
-            <img src={`https://ui-avatars.com/api/?name=Khaled+Tawfik&background=random`} alt={DOCTOR_NAME} className="bk-doc-avatar" />
+            <img src={avatarUrl} alt={DOCTOR_NAME} className="bk-doc-avatar" />
           </div>
         </div>
 

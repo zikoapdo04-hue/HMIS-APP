@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { Screen } from '../../types';
 
-interface Props { setScreen: (s: Screen) => void; specialty?: string; color?: string }
+import type { DoctorInfo } from './DoctorDetail';
+
+interface Props { setScreen: (s: Screen) => void; specialty?: string; color?: string; onSelectDoctor?: (d: DoctorInfo) => void }
 
 interface Doctor {
   uid:       string;
@@ -19,7 +21,7 @@ const MOCK_DOCTORS: Doctor[] = [
   { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, address: 'مستشفى السلام', phone: '01512345678' },
 ];
 
-export function Clinics({ setScreen }: Props) {
+export function Clinics({ setScreen, onSelectDoctor }: Props) {
   const [doctors, setDoctors]   = useState<Doctor[]>([]);
   const [search, setSearch]     = useState('');
 
@@ -56,7 +58,7 @@ export function Clinics({ setScreen }: Props) {
 
         <div className="clinic-list" dir="rtl">
           {filtered.map((dr) => (
-            <div key={dr.uid} className="clinic-card" onClick={() => setScreen('book-appointment')}>
+            <div key={dr.uid} className="clinic-card" onClick={() => onSelectDoctor ? onSelectDoctor(dr) : setScreen('book-appointment')}>
               <div className="clinic-dr-rating" dir="ltr">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#ECC94B" stroke="#ECC94B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <span className="rate-num">{dr.rating}</span>

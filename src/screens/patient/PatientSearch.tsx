@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import type { Screen } from '../../types';
 
-interface Props { setScreen: (s: Screen) => void }
+import type { DoctorInfo } from './DoctorDetail';
+
+interface Props { setScreen: (s: Screen) => void; onSelectDoctor?: (d: DoctorInfo) => void }
 
 interface Doctor {
   uid:       string;
   name:      string;
   specialty: string;
   rating:    number;
-  phone?:    string;
+  phone:     string;
 }
 
 const ALL_DOCTORS: Doctor[] = [
@@ -19,7 +21,7 @@ const ALL_DOCTORS: Doctor[] = [
   { uid: '5', name: 'د. هند علي', specialty: 'نساء وتوليد', rating: 4.9, phone: '01098765432' },
 ];
 
-export function PatientSearch({ setScreen }: Props) {
+export function PatientSearch({ setScreen, onSelectDoctor }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [allDoctors, setAllDoctors]   = useState<Doctor[]>([]);
   const [searched, setSearched]       = useState(false);
@@ -65,7 +67,7 @@ export function PatientSearch({ setScreen }: Props) {
         {results.length > 0 && (
           <div className="clinic-list" dir="rtl" style={{ marginTop: '16px' }}>
             {results.map((dr) => (
-              <div key={dr.uid} className="clinic-card" onClick={() => setScreen('book-appointment')}>
+              <div key={dr.uid} className="clinic-card" onClick={() => onSelectDoctor ? onSelectDoctor(dr) : setScreen('book-appointment')}>
                 <div className="clinic-dr-rating" dir="ltr">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="#ECC94B" stroke="#ECC94B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                   <span className="rate-num">{dr.rating}</span>

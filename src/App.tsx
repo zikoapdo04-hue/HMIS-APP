@@ -21,6 +21,8 @@ import { Clinics } from './screens/patient/Clinics';
 import { Notifications } from './screens/patient/Notifications';
 import { Support } from './screens/patient/Support';
 import { BookAppointment } from './screens/patient/BookAppointment';
+import { DoctorDetail } from './screens/patient/DoctorDetail';
+import type { DoctorInfo } from './screens/patient/DoctorDetail';
 import { BookingSuccess } from './screens/patient/BookingSuccess';
 import { PatientAppointments } from './screens/patient/PatientAppointments';
 import { PatientSettings } from './screens/patient/PatientSettings';
@@ -44,6 +46,7 @@ function AppInner() {
   const [transitioning, setTransitioning] = useState(false);
   const [clinicSpecialty, setClinicSpecialty] = useState('القلب');
   const [clinicColor, setClinicColor] = useState('#E57373');
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | null>(null);
   const historyStack = useRef<Screen[]>(['splash']);
   const sessionRouted = useRef(false);
 
@@ -123,17 +126,18 @@ function AppInner() {
       case 'login':                    return <Login setScreen={nav} role={role} />;
       case 'register':                 return <Register setScreen={nav} role={role} />;
       case 'register-doctor':          return <RegisterDoctor setScreen={nav} role={role} />;
+      case 'clinics':                  return <Clinics setScreen={nav} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
       case 'doctor-home':              return <DoctorHome setScreen={nav} />;
       case 'doctor-records':           return <DoctorRecords setScreen={nav} />;
       case 'doctor-profile':           return <DoctorProfile setScreen={nav} />;
       case 'doctor-settings':          return <DoctorSettings setScreen={nav} />;
       case 'patient-home':             return <PatientHome setScreen={nav} />;
       case 'patient-profile':          return <PatientProfile setScreen={nav} />;
-      case 'patient-search':           return <PatientSearch setScreen={nav} />;
-      case 'clinics':                  return <Clinics setScreen={nav} />;
+      case 'patient-search':           return <PatientSearch setScreen={nav} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
       case 'notifications':            return <Notifications setScreen={nav} />;
       case 'support':                  return <Support setScreen={nav} />;
-      case 'book-appointment':         return <BookAppointment setScreen={nav} />;
+      case 'doctor-detail':            return <DoctorDetail setScreen={nav} doctor={selectedDoctor} />;
+      case 'book-appointment':         return <BookAppointment setScreen={nav} doctor={selectedDoctor} />;
       case 'booking-success':          return <BookingSuccess setScreen={nav} />;
       case 'patient-appointments':     return <PatientAppointments setScreen={nav} />;
       case 'patient-settings':         return <PatientSettings setScreen={nav} />;

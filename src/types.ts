@@ -15,6 +15,7 @@ export type Screen =
   | 'clinics'
   | 'notifications'
   | 'support'
+  | 'doctor-detail'
   | 'book-appointment'
   | 'booking-success'
   | 'patient-appointments'
