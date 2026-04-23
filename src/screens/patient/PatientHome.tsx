@@ -5,13 +5,15 @@ import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 interface Props { setScreen: (s: Screen) => void }
 
 const specialties = [
-  { name: 'جراحة عامة',  color: '#8DBDF8', screen: 'clinics' as Screen },
   { name: 'عظام',         color: '#6CD4C4', screen: 'clinics' as Screen },
-  { name: 'قلب',          color: '#F99E8F', screen: 'clinics' as Screen },
+  { name: 'جراحة عامة',  color: '#8DBDF8', screen: 'clinics' as Screen },
   { name: 'نساء وتوليد', color: '#42685B', screen: 'clinics' as Screen },
-  { name: 'اطفال',        color: '#E53E17', screen: 'clinics' as Screen },
+  { name: 'قلب',          color: '#F99E8F', screen: 'clinics' as Screen },
   { name: 'مخ واعصاب',   color: '#26873F', screen: 'clinics' as Screen },
+  { name: 'اطفال',        color: '#E53E17', screen: 'clinics' as Screen },
 ];
+
+const ILL = `${import.meta.env.BASE_URL}doctors_illustration.png`;
 
 export function PatientHome({ setScreen }: Props) {
   const { user } = useAuth();
@@ -70,11 +72,48 @@ export function PatientHome({ setScreen }: Props) {
           <h3 style={{ fontFamily: 'Cairo', fontSize: 22, fontWeight: 800, color: '#3197A7', margin: '0 0 16px 0', textAlign: 'right' }}>التخصصات</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             {specialties.map((s, i) => (
-              <div key={i} onClick={() => setScreen(s.screen)} style={{ backgroundColor: s.color, borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingTop: '20px', paddingBottom: '16px', cursor: 'pointer', height: '230px' }}>
-                <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  <img src="/doctors_illustration.png" alt={s.name} style={{ width: '90%', height: '100%', objectFit: 'contain' }} />
+              <div key={i} onClick={() => setScreen(s.screen)}
+                style={{
+                  backgroundColor: s.color,
+                  borderRadius: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  cursor: 'pointer',
+                  height: '230px',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  transition: 'transform 0.18s, box-shadow 0.18s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+              >
+                {/* Doctor illustration */}
+                <img
+                  src={ILL}
+                  alt={s.name}
+                  style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0,
+                    width: '100%',
+                    height: '78%',
+                    objectFit: 'cover',
+                    objectPosition: 'top center',
+                  }}
+                />
+                {/* Label bar */}
+                <div style={{
+                  position: 'relative', zIndex: 1,
+                  width: '100%',
+                  padding: '10px 0',
+                  textAlign: 'center',
+                  background: 'rgba(0,0,0,0.12)',
+                }}>
+                  <span style={{ fontFamily: 'Cairo', fontSize: '22px', fontWeight: 800, color: 'white' }}>
+                    {s.name}
+                  </span>
                 </div>
-                <span style={{ fontFamily: 'Cairo', fontSize: '24px', fontWeight: 800, color: 'white', marginTop: '12px' }}>{s.name}</span>
               </div>
             ))}
           </div>
