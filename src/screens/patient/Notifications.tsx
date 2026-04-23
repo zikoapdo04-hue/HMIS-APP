@@ -30,7 +30,7 @@ export function Notifications({ setScreen }: Props) {
       )}
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', paddingBottom: '64px' }}>
-        <img src="/notifications_illustration.png" alt="Empty Notifications" style={{ width: '85%', maxWidth: '360px', objectFit: 'contain' }} />
+        <img src={`${import.meta.env.BASE_URL}security_illustration.png`} alt="Empty Notifications" style={{ width: '85%', maxWidth: '360px', objectFit: 'contain' }} />
         <span style={{ fontFamily: 'Cairo, sans-serif', fontSize: '22px', fontWeight: 800, color: '#8898AA', marginTop: '32px' }}>لاتوجد اشعارات سابقة</span>
       </div>
     </div>

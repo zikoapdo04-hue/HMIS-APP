@@ -91,7 +91,7 @@ export function PatientSearch({ setScreen, onSelectDoctor }: Props) {
         {/* Illustration when idle */}
         {!searched && (
           <div className="search-illustration-wrapper">
-            <img src="/security_illustration.png" alt="" className="search-ill-img" />
+            <img src={`${import.meta.env.BASE_URL}security_illustration.png`} alt="" className="search-ill-img" />
           </div>
         )}
       </div>

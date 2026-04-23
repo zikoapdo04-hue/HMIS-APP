@@ -13,21 +13,21 @@ export function Onboarding({ setScreen }: Props) {
 
   const slides = [
     {
-      img: '/security_illustration.png',
+      img: `${import.meta.env.BASE_URL}security_illustration.png`,
       title: t('onboarding.slide1.title'),
       sub: t('onboarding.slide1.sub'),
       icon: <ShieldIcon />,
       tags: [t('onboarding.slide1.tag1'), t('onboarding.slide1.tag2')],
     },
     {
-      img: '/booking_illustration.png',
+      img: `${import.meta.env.BASE_URL}booking_illustration.png`,
       title: t('onboarding.slide2.title'),
       sub: t('onboarding.slide2.sub'),
       icon: <CalendarIcon />,
       tags: [t('onboarding.slide2.tag1'), t('onboarding.slide2.tag2')],
     },
     {
-      img: '/doctors_illustration.png',
+      img: `${import.meta.env.BASE_URL}doctors_illustration.png`,
       title: t('onboarding.slide3.title'),
       sub: t('onboarding.slide3.sub'),
       icon: <StethoIcon />,
