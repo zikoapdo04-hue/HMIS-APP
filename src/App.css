@@ -2860,3 +2860,213 @@ html, body {
   .dd-hero-card { padding: 40px 60px 32px; }
 }
 
+/* ══════════════════════════════════════
+   PATIENT PROFILE (الحساب الشخصي)
+══════════════════════════════════════ */
+.pp-screen {
+  width: 100%; height: 100%;
+  background: #ffffff;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.pp-header {
+  background: #148C9E;
+  padding: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.pp-header-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: 24px; font-weight: 800;
+  color: #ffffff;
+}
+.pp-settings-btn {
+  position: absolute;
+  left: 16px; top: 50%;
+  transform: translateY(-50%);
+  background: transparent; border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px;
+  transition: opacity 0.2s;
+}
+.pp-settings-btn:hover { opacity: 0.75; }
+
+/* Scrollable body */
+.pp-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 16px 100px;
+  display: flex; flex-direction: column; gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20,140,158,0.25) transparent;
+}
+.pp-body::-webkit-scrollbar { width: 4px; }
+.pp-body::-webkit-scrollbar-track { background: transparent; }
+.pp-body::-webkit-scrollbar-thumb {
+  background: rgba(20,140,158,0.3);
+  border-radius: 4px;
+}
+
+/* Patient info card */
+.pp-patient-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 0 4px;
+}
+.pp-patient-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  justify-content: flex-end;
+}
+.pp-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #148C9E;
+  box-shadow: 0 4px 14px rgba(20,140,158,0.2);
+}
+.pp-patient-name {
+  font-family: 'Cairo', sans-serif;
+  font-size: 26px; font-weight: 800;
+  color: #148C9E;
+}
+.pp-contact-btn {
+  align-self: flex-end;
+  background: none; border: none;
+  font-family: 'Cairo', sans-serif;
+  font-size: 20px; font-weight: 800;
+  color: #148C9E;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: opacity 0.2s;
+}
+.pp-contact-btn:hover { opacity: 0.7; }
+
+/* Section title */
+.pp-section-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: #1A3A4A;
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* Record / appointment card */
+.pp-card {
+  background: #E4ECF4;
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pp-card-date {
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px; font-weight: 600;
+  color: #4A5568;
+  text-align: right;
+  margin: 0;
+}
+.pp-card-doctor-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+}
+.pp-card-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.pp-card-doctor-info {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 2px;
+}
+.pp-card-doctor-name {
+  font-family: 'Cairo', sans-serif;
+  font-size: 18px; font-weight: 800;
+  color: #3197A7;
+}
+.pp-card-specialty {
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: #4A5568;
+}
+
+/* Detail rows inside card */
+.pp-card-details {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pp-card-detail-row {
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: #4A5568;
+  text-align: right;
+  margin: 0;
+}
+
+/* Print icon inside card */
+.pp-print-icon {
+  position: absolute;
+  top: 16px; left: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid #2B2E60;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.pp-print-icon:hover { background: rgba(43,46,96,0.08); }
+
+/* X-ray image */
+.pp-xray-wrap {
+  position: relative;
+  width: 150px;
+  margin-right: auto;
+  margin-top: 4px;
+}
+.pp-xray-img {
+  width: 100%;
+  border-radius: 10px;
+  opacity: 0.85;
+  filter: grayscale(100%) contrast(1.2);
+  display: block;
+}
+.pp-xray-plus {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px; height: 40px;
+  pointer-events: none;
+}
+.pp-plus-h {
+  position: absolute;
+  top: 16px; left: 0; right: 0;
+  height: 8px;
+  background: black;
+}
+.pp-plus-v {
+  position: absolute;
+  left: 16px; top: 0; bottom: 0;
+  width: 8px;
+  background: black;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .pp-body { padding: 24px 80px 100px; }
+  .pp-header { padding: 22px 80px; }
+}
