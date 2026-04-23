@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebase';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 
@@ -27,33 +25,20 @@ export function AdminHome({ setScreen, navClinic }: Props) {
   const [deptPct, setDeptPct]           = useState<Record<string, number>>({});
 
   useEffect(() => {
-    async function load() {
-      try {
-        // Counts
-        const [docSnap, patSnap, apptSnap] = await Promise.all([
-          getDocs(collection(db, 'doctors')),
-          getDocs(collection(db, 'patients')),
-          getDocs(query(collection(db, 'appointments'), where('status', '==', 'active'))),
-        ]);
-        setDoctorCount(docSnap.size);
-        setPatientCount(patSnap.size);
-        setApptCount(apptSnap.size);
+    // Mock Data
+    setDoctorCount(45);
+    setPatientCount(320);
+    setApptCount(150);
 
-        // Dept specialty breakdown
-        const counts: Record<string, number> = {};
-        const total = docSnap.size || 1;
-        docSnap.forEach(d => {
-          const spec: string = d.data().specialty ?? 'أخرى';
-          counts[spec] = (counts[spec] ?? 0) + 1;
-        });
-        const pct: Record<string, number> = {};
-        for (const [k, v] of Object.entries(counts)) {
-          pct[k] = Math.round((v / total) * 100);
-        }
-        setDeptPct(pct);
-      } catch { /* ignore — shows placeholder values */ }
-    }
-    load();
+    const mockupPcts: Record<string, number> = {
+      'القلب': 20,
+      'جراحة عامة': 15,
+      'مخ واعصاب': 10,
+      'عظام': 25,
+      'اطفال': 15,
+      'نساء وتوليد': 15,
+    };
+    setDeptPct(mockupPcts);
   }, []);
 
   const departments = DEPT_META.map(m => ({

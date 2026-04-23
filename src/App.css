@@ -121,7 +121,7 @@ html, body {
 .global-back-btn {
   position: absolute;
   top: 16px;
-  left: 16px;
+  inset-inline-start: 16px;
   z-index: 9999;
   width: 44px;
   height: 44px;
@@ -166,7 +166,7 @@ html, body {
 @media (min-width: 768px) {
   .global-back-btn {
     top: 20px;
-    left: 20px;
+    inset-inline-start: 20px;
     width: 48px;
     height: 48px;
   }
@@ -305,7 +305,6 @@ html, body {
   background: #ffffff;
   display: flex; flex-direction: column;
   padding: 48px 56px;
-  direction: rtl;
   gap: 0;
 }
 
@@ -444,7 +443,7 @@ html, body {
 }
 
 .role-welcome-text {
-  text-align: center; direction: rtl;
+  text-align: center;
 }
 .role-welcome-ar {
   display: block;
@@ -473,7 +472,6 @@ html, body {
   border-radius: 20px;
   padding: 26px 22px;
   display: flex; flex-direction: column; gap: 12px;
-  direction: rtl;
 }
 
 .role-label {
@@ -503,7 +501,7 @@ html, body {
 
 .role-login-link {
   font-size: 14px; font-weight: 500;
-  color: var(--navy2); direction: rtl;
+  color: var(--navy2);
 }
 .role-login-link span {
   font-weight: 700; color: var(--navy);
@@ -601,7 +599,7 @@ html, body {
   font-size: 15px; font-weight: 500;
   color: var(--navy);
   transition: box-shadow 0.2s, background 0.2s;
-  text-align: right;
+  text-align: start;
 }
 .auth-input::placeholder {
   color: #9BBFC6;
@@ -633,14 +631,13 @@ html, body {
 /* Forgot password */
 .forgot-link {
   width: 100%;
-  text-align: left;
+  text-align: start;
   font-family: 'Cairo', sans-serif;
   font-size: 13px; font-weight: 500;
   color: var(--gray);
   cursor: pointer;
   padding-right: 8px;
   transition: color 0.2s;
-  direction: rtl;
 }
 .forgot-link:hover { color: var(--teal); }
 
@@ -671,7 +668,7 @@ html, body {
   font-family: 'Cairo', sans-serif;
   font-size: 14px; font-weight: 500;
   color: var(--gray);
-  text-align: center; direction: rtl;
+  text-align: center;
 }
 .auth-bottom-link span {
   font-weight: 700;

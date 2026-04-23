@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
 
@@ -15,40 +13,19 @@ interface Record {
   patientId:  string;
 }
 
+const MOCK_RECORDS: Record[] = [
+  { id: '1', patientName: 'سعيد عبدالهادي', date: '20-12-2023', time: '10:00 ص', specialty: 'جراحة عامة', patientId: 'p1' },
+  { id: '2', patientName: 'فاطمة محمود', date: '18-12-2023', time: '12:00 م', specialty: 'جراحة عامة', patientId: 'p2' },
+  { id: '3', patientName: 'محمد أحمد', date: '15-12-2023', time: '01:30 م', specialty: 'جراحة عامة', patientId: 'p3' },
+];
+
 export function DoctorRecords({ setScreen }: Props) {
   const { user } = useAuth();
   const [records, setRecords] = useState<Record[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    async function load() {
-      try {
-        // Show all completed (cancelled or past) appointments for this doctor
-        const q    = query(
-          collection(db, 'appointments'),
-          where('doctorId', '==', user!.uid),
-        );
-        const snap = await getDocs(q);
-        const list: Record[] = [];
-        snap.forEach(d => {
-          const data = d.data();
-          list.push({
-            id:          d.id,
-            patientName: data.patientName ?? 'مريض',
-            date:        data.date        ?? '',
-            time:        data.time        ?? '',
-            specialty:   data.specialty   ?? '',
-            patientId:   data.patientId   ?? '',
-          });
-        });
-        // Sort most recent first (by id insertion order as proxy)
-        list.reverse();
-        setRecords(list);
-      } catch { /* silent */ }
-      setLoading(false);
-    }
-    load();
+    setRecords(MOCK_RECORDS);
   }, [user]);
 
   return (
@@ -57,8 +34,7 @@ export function DoctorRecords({ setScreen }: Props) {
       <div className="dash-content mt-16">
         <h3 className="dash-section-title" dir="rtl">اخر الحالات</h3>
 
-        {loading && <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>جاري التحميل...</p>}
-        {!loading && records.length === 0 && (
+        {records.length === 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>لا يوجد سجلات</p>
         )}
 

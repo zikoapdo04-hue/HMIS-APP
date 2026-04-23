@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebase';
 import type { Screen } from '../../types';
 
 interface Props { setScreen: (s: Screen) => void }
@@ -10,39 +8,24 @@ interface Doctor {
   name:      string;
   specialty: string;
   rating:    number;
+  phone?:    string;
 }
+
+const ALL_DOCTORS: Doctor[] = [
+  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', rating: 4.8, phone: '01012345678' },
+  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', rating: 4.9, phone: '01123456789' },
+  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', rating: 4.5, phone: '01234567890' },
+  { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, phone: '01512345678' },
+  { uid: '5', name: 'د. هند علي', specialty: 'نساء وتوليد', rating: 4.9, phone: '01098765432' },
+];
 
 export function PatientSearch({ setScreen }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [allDoctors, setAllDoctors]   = useState<Doctor[]>([]);
-  const [loading, setLoading]         = useState(false);
   const [searched, setSearched]       = useState(false);
 
-  // Pre-load all doctors once
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        const userSnap = await getDocs(collection(db, 'users'));
-        const docSnap  = await getDocs(collection(db, 'doctors'));
-        const nameMap: Record<string, string> = {};
-        userSnap.forEach(d => { nameMap[d.id] = d.data().name ?? ''; });
-
-        const list: Doctor[] = [];
-        docSnap.forEach(d => {
-          const data = d.data();
-          list.push({
-            uid:       d.id,
-            name:      nameMap[d.id] ?? data.name ?? 'طبيب',
-            specialty: data.specialty ?? '—',
-            rating:    data.rating    ?? 0,
-          });
-        });
-        setAllDoctors(list);
-      } catch { /* silent */ }
-      setLoading(false);
-    }
-    load();
+    setAllDoctors(ALL_DOCTORS);
   }, []);
 
   const results = searchQuery.trim().length > 0
@@ -75,15 +58,11 @@ export function PatientSearch({ setScreen }: Props) {
         </div>
 
         {/* Results */}
-        {loading && (
-          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '16px' }}>جاري التحميل...</p>
-        )}
-
-        {!loading && searched && results.length === 0 && searchQuery.trim().length > 0 && (
+        {searched && results.length === 0 && searchQuery.trim().length > 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '16px' }}>لا توجد نتائج</p>
         )}
 
-        {!loading && results.length > 0 && (
+        {results.length > 0 && (
           <div className="clinic-list" dir="rtl" style={{ marginTop: '16px' }}>
             {results.map((dr) => (
               <div key={dr.uid} className="clinic-card" onClick={() => setScreen('book-appointment')}>
@@ -94,6 +73,10 @@ export function PatientSearch({ setScreen }: Props) {
                 <div className="clinic-dr-info">
                   <h3 className="clinic-dr-name">{dr.name}</h3>
                   <p className="clinic-dr-spec">{dr.specialty}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', color: '#168A9E', fontSize: '14px', fontFamily: 'Cairo' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span dir="ltr">{dr.phone}</span>
+                  </div>
                 </div>
                 <div className="clinic-dr-img">
                   <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(dr.name)}&background=random`} alt={dr.name} />

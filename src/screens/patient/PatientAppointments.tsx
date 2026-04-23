@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
 
@@ -15,45 +13,22 @@ interface Appointment {
   address:    string;
 }
 
+const MOCK_APPOINTMENTS: Appointment[] = [
+  { id: '1', doctorName: 'د. خالد توفيق', specialty: 'جراحة عامة', date: '21-12-2023', time: '04:30PM', address: 'عيادة دجلة' },
+  { id: '2', doctorName: 'د. منى حسن', specialty: 'اطفال', date: '25-12-2023', time: '10:00AM', address: 'مستشفى السلام' },
+];
+
 export function PatientAppointments({ setScreen }: Props) {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    async function load() {
-      try {
-        const q    = query(
-          collection(db, 'appointments'),
-          where('patientId', '==', user!.uid),
-          where('status',    '==', 'active'),
-        );
-        const snap = await getDocs(q);
-        const list: Appointment[] = [];
-        snap.forEach(d => {
-          const data = d.data();
-          list.push({
-            id:         d.id,
-            doctorName: data.doctorName ?? '—',
-            specialty:  data.specialty  ?? '',
-            date:       data.date       ?? '',
-            time:       data.time       ?? '',
-            address:    data.address    ?? '',
-          });
-        });
-        setAppointments(list);
-      } catch { /* silent */ }
-      setLoading(false);
-    }
-    load();
+    setAppointments(MOCK_APPOINTMENTS);
   }, [user]);
 
-  const cancelAppointment = async (id: string) => {
-    try {
-      await updateDoc(doc(db, 'appointments', id), { status: 'cancelled' });
-      setAppointments(prev => prev.filter(a => a.id !== id));
-    } catch { /* silent */ }
+  const cancelAppointment = (id: string) => {
+    setAppointments(prev => prev.filter(a => a.id !== id));
   };
 
   return (
@@ -63,8 +38,7 @@ export function PatientAppointments({ setScreen }: Props) {
       </header>
       <div className="search-main-content" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {loading && <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>جاري التحميل...</p>}
-        {!loading && appointments.length === 0 && (
+        {appointments.length === 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>لا يوجد حجوزات نشطة</p>
         )}
 

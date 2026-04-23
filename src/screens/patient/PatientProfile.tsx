@@ -2,7 +2,7 @@ import type { Screen } from '../../types';
 
 interface Props { setScreen: (s: Screen) => void }
 
-export function PatientProfile({ setScreen }: Props) {
+export function PatientProfile({ }: Props) {
   const records = [
     {
       id: 1,

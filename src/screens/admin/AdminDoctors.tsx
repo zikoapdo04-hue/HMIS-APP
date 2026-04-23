@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 
@@ -15,36 +13,19 @@ interface Doctor {
   rating:    number;
 }
 
+const MOCK_DOCTORS: Doctor[] = [
+  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', days: 'الاحد، الثلاثاء', address: 'عيادة دجلة', rating: 4.8 },
+  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', days: 'الاثنين، الاربعاء', address: 'مستشفى السلام', rating: 4.9 },
+  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', days: 'السبت، الخميس', address: 'العيادات التخصصية', rating: 4.5 },
+];
+
 export function AdminDoctors({ setScreen }: Props) {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [query, setQuery]     = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const userSnap = await getDocs(collection(db, 'users'));
-        const docSnap  = await getDocs(collection(db, 'doctors'));
-        const nameMap: Record<string, string> = {};
-        userSnap.forEach(d => { nameMap[d.id] = d.data().name ?? ''; });
-
-        const list: Doctor[] = [];
-        docSnap.forEach(d => {
-          const data = d.data();
-          list.push({
-            uid:       d.id,
-            name:      nameMap[d.id] ?? data.name ?? 'طبيب',
-            specialty: data.specialty ?? '',
-            days:      data.days      ?? '',
-            address:   data.address   ?? '',
-            rating:    data.rating    ?? 0,
-          });
-        });
-        setDoctors(list);
-      } catch { /* shows empty list gracefully */ }
-      setLoading(false);
-    }
-    load();
+    // Load mock data
+    setDoctors(MOCK_DOCTORS);
   }, []);
 
   const filtered = doctors.filter(d =>
@@ -96,10 +77,7 @@ export function AdminDoctors({ setScreen }: Props) {
           <div style={{ flex: 1,   textAlign: 'center' }}>التقييم</div>
         </div>
 
-        {loading && (
-          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>جاري التحميل...</p>
-        )}
-        {!loading && filtered.length === 0 && (
+        {filtered.length === 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>لا يوجد أطباء</p>
         )}
 

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 
@@ -14,43 +12,27 @@ interface Booking {
   doctorName:  string;
 }
 
+const MOCK_BOOKINGS: Booking[] = [
+  { id: '1', patientName: 'أحمد محمود', date: '21-12-2023', time: '10:00 ص', doctorName: 'د. خالد عبدالله' },
+  { id: '2', patientName: 'سارة محمد', date: '21-12-2023', time: '11:00 ص', doctorName: 'د. منى حسن' },
+  { id: '3', patientName: 'عمر علي', date: '22-12-2023', time: '09:00 ص', doctorName: 'د. ياسر إبراهيم' },
+];
+
 export function AdminPatients({ setScreen }: Props) {
   const [bookings, setBookings]   = useState<Booking[]>([]);
   const [search, setSearch]       = useState('');
-  const [loading, setLoading]     = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const q    = query(collection(db, 'appointments'), where('status', '==', 'active'));
-        const snap = await getDocs(q);
-        const list: Booking[] = [];
-        snap.forEach(d => {
-          const data = d.data();
-          list.push({
-            id:          d.id,
-            patientName: data.patientName ?? '—',
-            date:        data.date        ?? '',
-            time:        data.time        ?? '',
-            doctorName:  data.doctorName  ?? '—',
-          });
-        });
-        setBookings(list);
-      } catch { /* shows empty list */ }
-      setLoading(false);
-    }
-    load();
+    // Load mock data
+    setBookings(MOCK_BOOKINGS);
   }, []);
 
   const filtered = bookings.filter(b =>
     b.patientName.includes(search) || b.doctorName.includes(search)
   );
 
-  const cancelBooking = async (id: string) => {
-    try {
-      await updateDoc(doc(db, 'appointments', id), { status: 'cancelled' });
-      setBookings(prev => prev.filter(b => b.id !== id));
-    } catch { /* silent */ }
+  const cancelBooking = (id: string) => {
+    setBookings(prev => prev.filter(b => b.id !== id));
   };
 
   // Get today's date in Arabic day name + numeric
@@ -108,11 +90,8 @@ export function AdminPatients({ setScreen }: Props) {
           <div style={{ flex: 1.5, textAlign: 'left', paddingLeft: '8px' }}>الحجوزات</div>
         </div>
 
-        {loading && (
-          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>جاري التحميل...</p>
-        )}
-        {!loading && filtered.length === 0 && (
-          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>لا يوجد حجوزات نشطة</p>
+        {filtered.length === 0 && (
+          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>لا يوجد حجوزات</p>
         )}
 
         {filtered.map((b) => (

@@ -1,0 +1,63 @@
+{
+  "splash": {
+    "tagline": "Your Health... Our Priority"
+  },
+  "roleSelection": {
+    "welcome": "Welcome to",
+    "doctor": "Doctor",
+    "patient": "Patient",
+    "admin": "System Admin",
+    "haveAccount": "Already have an account? ",
+    "login": "Login"
+  },
+  "auth": {
+    "dataEntry": "Data Entry",
+    "errEmpty": "Please enter email and password",
+    "errAdmin": "Sorry, you are not authorized to login as admin. Incorrect credentials.",
+    "errFill": "Please fill all required fields",
+    "registerNew": "Create New Account",
+    "registerDoctor": "Create Doctor Account",
+    "login": "Login",
+    "register": "Create Account",
+    "name": "Name :",
+    "email": "Email Address :",
+    "password": "Password :",
+    "city": "City :",
+    "age": "Age :",
+    "phone": "Phone Number :",
+    "specialty": "Specialty :",
+    "hospital": "Hospital :",
+    "address": "Clinic Address :",
+    "forgot": "Forgot Password?",
+    "noAccount": "Don't have an account? ",
+    "registerNow": "Register Now",
+    "confirmRegister": "Confirm Registration",
+    "haveAccount": "Already have an account? "
+  },
+  "onboarding": {
+    "skip": "Skip →",
+    "next": "Next",
+    "start": "Start Now",
+    "slide1": {
+      "title": "Secure & Confidential",
+      "sub": "Rest assured, your privacy and security are our top priorities",
+      "tag1": "🔒 Data Encryption",
+      "tag2": "🛡️ Total Protection"
+    },
+    "slide2": {
+      "title": "Easy Booking",
+      "sub": "Book appointments easily anytime, anywhere",
+      "tag1": "📅 Instant Booking",
+      "tag2": "⏰ Available 24/7"
+    },
+    "slide3": {
+      "title": "Find a Specialist",
+      "sub": "Discover a wide range of expert doctors in various medical fields",
+      "tag1": "👨‍⚕️ Certified Doctors",
+      "tag2": "🏥 Multiple Specialties"
+    }
+  },
+  "common": {
+    "back": "Back"
+  }
+}

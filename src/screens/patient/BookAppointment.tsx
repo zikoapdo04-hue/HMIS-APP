@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
 
 interface Props { setScreen: (s: Screen) => void }
 
 const TIME_SLOTS = ['04:00PM','04:30PM','05:00PM','05:30PM','06:00PM','06:30PM','07:00PM','07:30PM'];
-// Slots already taken (would normally come from Firestore query)
+// Slots already taken
 const TAKEN = new Set(['04:00PM','05:00PM','07:00PM']);
 
 export function BookAppointment({ setScreen }: Props) {
@@ -17,40 +15,24 @@ export function BookAppointment({ setScreen }: Props) {
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
 
-  // Doctor info — in a real app this would be passed as a prop from the Clinics screen
+  // Doctor info mockup
   const DOCTOR_NAME    = 'خالد توفيق';
-  const DOCTOR_ID      = 'placeholder-doctor-id';
   const SPECIALTY      = 'جراحة عامة';
-  const ADDRESS        = '23 شارع الحجاز, مصر الجديد, القاهرة';
   const RATING         = 5;
   const AVAILABLE_DAYS = ['الاثنين', 'الاربع'];
 
   const today = new Date();
   const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!user) { setError('يجب تسجيل الدخول أولاً'); return; }
     setLoading(true);
     setError('');
-    try {
-      await addDoc(collection(db, 'appointments'), {
-        patientId:   user.uid,
-        patientName: user.name,
-        doctorId:    DOCTOR_ID,
-        doctorName:  DOCTOR_NAME,
-        specialty:   SPECIALTY,
-        address:     ADDRESS,
-        date:        dateStr,
-        time:        selectedTime,
-        symptoms,
-        status:      'active',
-      });
+
+    setTimeout(() => {
       setScreen('booking-success');
-    } catch {
-      setError('حدث خطأ، حاول مرة أخرى');
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (

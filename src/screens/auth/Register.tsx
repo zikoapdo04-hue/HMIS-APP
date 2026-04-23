@@ -1,110 +1,85 @@
 import { useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  type AuthError,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../firebase';
-import type { Screen } from '../../types';
+import { useTranslation } from 'react-i18next';
+import type { Screen, Role } from '../../types';
 import { HMISGlobe, HMISShieldLogo, EyeOpen, EyeOff } from '../../components/Icons';
+import { useAuth } from '../../context/AuthContext';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 
-interface Props { setScreen: (s: Screen) => void }
+interface Props { setScreen: (s: Screen) => void; role: Role }
 
-function mapError(code: string): string {
-  if (code === 'auth/email-already-in-use') return 'هذا الايميل مستخدم بالفعل';
-  if (code === 'auth/weak-password')        return 'كلمة السر يجب أن تكون 6 أحرف على الأقل';
-  if (code === 'auth/invalid-email')        return 'صيغة الايميل غير صحيحة';
-  return 'حدث خطأ، حاول مرة أخرى';
-}
+export function Register({ setScreen, role }: Props) {
+  const [name, setName]         = useState('');
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [city, setCity]         = useState('');
+  const [age, setAge]           = useState('');
+  const [phone, setPhone]       = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
+  const { login } = useAuth();
+  const { t } = useTranslation();
 
-export function Register({ setScreen }: Props) {
-  const [regName, setRegName]       = useState('');
-  const [regEmail, setRegEmail]     = useState('');
-  const [regCity, setRegCity]       = useState('');
-  const [regAge, setRegAge]         = useState('');
-  const [regPhone, setRegPhone]     = useState('');
-  const [regPass, setRegPass]       = useState('');
-  const [regConfirm, setRegConfirm] = useState('');
-  const [showPass, setShowPass]     = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState('');
-
-  const handleRegister = async () => {
-    setError('');
-    if (!regName || !regEmail || !regPass) { setError('يرجى ملء جميع الحقول المطلوبة'); return; }
-    if (regPass !== regConfirm)            { setError('كلمتا السر غير متطابقتين'); return; }
+  const handleRegister = () => {
+    if (!name || !email || !password || !phone) { setError(t('auth.errFill')); return; }
     setLoading(true);
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, regEmail, regPass);
-      const uid  = cred.user.uid;
+    setError('');
 
-      // Write base user doc
-      await setDoc(doc(db, 'users', uid), {
-        role:  'patient',
-        name:  regName,
-        email: regEmail,
+    setTimeout(() => {
+      login({
+        uid: Math.random().toString(),
+        email,
+        name,
+        role,
+        city,
+        age,
+        phone
       });
-
-      // Write patient profile doc
-      await setDoc(doc(db, 'patients', uid), {
-        city:  regCity,
-        age:   regAge,
-        phone: regPhone,
-      });
-
-      setScreen('patient-home');
-    } catch (e) {
-      setError(mapError((e as AuthError).code ?? ''));
-    } finally {
+      
+      const home: Screen =
+        role === 'doctor' ? 'doctor-home' :
+        role === 'admin'  ? 'admin-home'  : 'patient-home';
+      setScreen(home);
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (
     <div className="auth-screen">
+      <LanguageSwitcher />
       <div className="auth-glow one" /><div className="auth-glow two" />
-      <div className="auth-card reg-card" dir="rtl">
+      <div className="auth-card reg-card">
         <div className="auth-logo-row">
-          <HMISGlobe size={72} /><span className="auth-hmis-text">HMIS</span><HMISShieldLogo size={44} />
+          <HMISGlobe size={80} /><span className="auth-hmis-text">HMIS</span><HMISShieldLogo size={48} />
         </div>
-        <h2 className="auth-heading">تسجيل بيانات المريض</h2>
+        <h2 className="auth-heading">{t('auth.registerNew')}</h2>
 
         {error && (
-          <p style={{ color: '#e53e3e', fontFamily: 'Cairo', fontSize: 15, textAlign: 'center', margin: '0 0 8px' }}>
+          <p style={{ color: '#e53e3e', fontFamily: 'Cairo', fontSize: 13, textAlign: 'center', margin: '0 0 8px' }}>
             {error}
           </p>
         )}
 
-        <div className="auth-field"><input id="reg-name"  type="text"   placeholder="الاسم:"        value={regName}    onChange={e => setRegName(e.target.value)}    className="auth-input" dir="rtl" /></div>
-        <div className="auth-field"><input id="reg-email" type="email"  placeholder="الايميل:"      value={regEmail}   onChange={e => setRegEmail(e.target.value)}   className="auth-input" dir="rtl" /></div>
-        <div className="auth-field"><input id="reg-city"  type="text"   placeholder="المدينة:"      value={regCity}    onChange={e => setRegCity(e.target.value)}    className="auth-input" dir="rtl" /></div>
-        <div className="auth-field"><input id="reg-age"   type="number" placeholder="العمر:"        value={regAge}     onChange={e => setRegAge(e.target.value)}     className="auth-input" dir="rtl" /></div>
-        <div className="auth-field"><input id="reg-phone" type="tel"    placeholder="رقم الهاتف:"   value={regPhone}   onChange={e => setRegPhone(e.target.value)}   className="auth-input" dir="rtl" /></div>
-
+        <div className="auth-field"><input type="text" placeholder={t('auth.name')} value={name} onChange={e => setName(e.target.value)} className="auth-input" /></div>
+        <div className="auth-field"><input type="email" placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} className="auth-input" /></div>
+        
         <div className="auth-field">
-          <button type="button" className="eye-btn" onClick={() => setShowPass(p => !p)} aria-label="toggle password">
+          <button type="button" className="eye-btn" onClick={() => setShowPass(p => !p)}>
             {showPass ? <EyeOpen /> : <EyeOff />}
           </button>
-          <input id="reg-pass" type={showPass ? 'text' : 'password'} placeholder="انشاء كلمة السر:" value={regPass} onChange={e => setRegPass(e.target.value)} className="auth-input with-icon" dir="rtl" />
+          <input type={showPass ? 'text' : 'password'} placeholder={t('auth.password')} value={password} onChange={e => setPassword(e.target.value)} className="auth-input with-icon" />
         </div>
-        <div className="auth-field">
-          <button type="button" className="eye-btn" onClick={() => setShowConfirm(p => !p)} aria-label="toggle confirm">
-            {showConfirm ? <EyeOpen /> : <EyeOff />}
-          </button>
-          <input id="reg-confirm" type={showConfirm ? 'text' : 'password'} placeholder="تاكيد كلمة السر:" value={regConfirm} onChange={e => setRegConfirm(e.target.value)} className="auth-input with-icon" dir="rtl" />
-        </div>
+        
+        <div className="auth-field"><input type="text" placeholder={t('auth.city')} value={city} onChange={e => setCity(e.target.value)} className="auth-input" /></div>
+        <div className="auth-field"><input type="number" placeholder={t('auth.age')} value={age} onChange={e => setAge(e.target.value)} className="auth-input" /></div>
+        <div className="auth-field"><input type="tel" placeholder={t('auth.phone')} value={phone} onChange={e => setPhone(e.target.value)} className="auth-input" /></div>
 
-        <button
-          id="reg-submit"
-          className="auth-submit-btn"
-          onClick={handleRegister}
-          disabled={loading}
-          style={{ opacity: loading ? 0.7 : 1 }}
-        >
-          {loading ? '...' : 'تسجيل الدخول'}
+        <button className="auth-submit-btn" style={{ marginTop: 24, opacity: loading ? 0.7 : 1 }} onClick={handleRegister} disabled={loading}>
+          {loading ? '...' : t('auth.confirmRegister')}
         </button>
-        <p className="auth-bottom-link">لديك حساب ؟ <span onClick={() => setScreen('login')}>تسجيل الدخول</span></p>
+        <p className="auth-bottom-link">
+          {t('auth.haveAccount')} <span onClick={() => setScreen('login')}>{t('auth.login')}</span>
+        </p>
       </div>
     </div>
   );

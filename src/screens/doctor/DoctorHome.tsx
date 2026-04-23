@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
 
@@ -13,41 +11,19 @@ interface Appointment {
   num:         number;
 }
 
+const MOCK_TODAY_APPTS: Appointment[] = [
+  { id: '1', patientName: 'أحمد محمود', time: '10:00 ص', num: 1 },
+  { id: '2', patientName: 'سارة محمد', time: '11:30 ص', num: 2 },
+  { id: '3', patientName: 'عمر علي', time: '01:00 م', num: 3 },
+];
+
 export function DoctorHome({ setScreen }: Props) {
   const { user } = useAuth();
   const [todayAppts, setTodayAppts] = useState<Appointment[]>([]);
-  const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    async function load() {
-      try {
-        const today = new Date();
-        const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
-
-        const q    = query(
-          collection(db, 'appointments'),
-          where('doctorId', '==', user!.uid),
-          where('date',     '==', dateStr),
-          where('status',   '==', 'active'),
-        );
-        const snap = await getDocs(q);
-        const list: Appointment[] = [];
-        let num = 1;
-        snap.forEach(d => {
-          const data = d.data();
-          list.push({
-            id:          d.id,
-            patientName: data.patientName ?? 'مريض',
-            time:        data.time        ?? '',
-            num:         num++,
-          });
-        });
-        setTodayAppts(list);
-      } catch { /* silent */ }
-      setLoading(false);
-    }
-    load();
+    setTodayAppts(MOCK_TODAY_APPTS);
   }, [user]);
 
   const doctorName = user?.name ?? 'الطبيب';
@@ -90,8 +66,7 @@ export function DoctorHome({ setScreen }: Props) {
       </div>
       <div className="dash-content">
         <h3 className="dash-section-title" dir="rtl">مواعيد اليوم</h3>
-        {loading && <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>جاري التحميل...</p>}
-        {!loading && todayAppts.length === 0 && (
+        {todayAppts.length === 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA' }}>لا توجد مواعيد اليوم</p>
         )}
         <div className="dash-cards">

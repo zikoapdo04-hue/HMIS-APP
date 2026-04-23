@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
 import type { Screen } from '../../types';
 
 interface Props {
@@ -22,42 +20,17 @@ export function AdminClinic({ setScreen, specialty = 'عظام', color = '#148C9
   const [apptCount, setApptCount]   = useState(0);
   const [patCount, setPatCount]     = useState(0);
   const [search, setSearch]         = useState('');
-  const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        // Doctors in this specialty
-        const userSnap   = await getDocs(collection(db, 'users'));
-        const docSnap    = await getDocs(query(collection(db, 'doctors'), where('specialty', '==', specialty)));
-        const nameMap: Record<string, string> = {};
-        userSnap.forEach(d => { nameMap[d.id] = d.data().name ?? ''; });
-
-        const list: Doctor[] = [];
-        docSnap.forEach(d => {
-          const data = d.data();
-          list.push({
-            uid:       d.id,
-            name:      nameMap[d.id] ?? data.name ?? 'طبيب',
-            specialty: data.specialty ?? specialty,
-            rating:    data.rating    ?? 0,
-            address:   data.address   ?? '',
-          });
-        });
-        setDoctors(list);
-
-        // Active appointments for this specialty
-        const apptSnap = await getDocs(
-          query(collection(db, 'appointments'), where('specialty', '==', specialty), where('status', '==', 'active'))
-        );
-        const uniquePatients = new Set<string>();
-        apptSnap.forEach(d => { uniquePatients.add(d.data().patientId); });
-        setApptCount(apptSnap.size);
-        setPatCount(uniquePatients.size);
-      } catch { /* silent */ }
-      setLoading(false);
-    }
-    load();
+    // Load mock data based on specialty
+    const MOCK_DEPT: Doctor[] = [
+      { uid: '1', name: 'د. خالد عبدالله', specialty: specialty, rating: 4.8, address: 'عيادة دجلة' },
+      { uid: '2', name: 'د. منى حسن', specialty: specialty, rating: 4.9, address: 'مستشفى السلام' },
+      { uid: '3', name: 'د. ياسر إبراهيم', specialty: specialty, rating: 4.5, address: 'العيادات التخصصية' },
+    ];
+    setDoctors(MOCK_DEPT);
+    setApptCount(15);
+    setPatCount(10);
   }, [specialty]);
 
   const filtered = search.trim()
@@ -99,15 +72,15 @@ export function AdminClinic({ setScreen, specialty = 'عظام', color = '#148C9
         <div style={{ background: '#E0E0E0', borderRadius: '24px', margin: '24px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '240px', margin: '0 auto', direction: 'rtl' }}>
             <span style={{ fontFamily: 'Cairo', fontSize: 20, fontWeight: 700, color }}>عدد الاطباء :</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{loading ? '…' : doctors.length}</span>
+            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{doctors.length}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '240px', margin: '0 auto', direction: 'rtl' }}>
             <span style={{ fontFamily: 'Cairo', fontSize: 20, fontWeight: 700, color }}>عدد المرضي :</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{loading ? '…' : patCount}</span>
+            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{patCount}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '240px', margin: '0 auto', direction: 'rtl' }}>
             <span style={{ fontFamily: 'Cairo', fontSize: 20, fontWeight: 700, color }}>عدد الكشفات :</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{loading ? '…' : apptCount}</span>
+            <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#4A5568' }}>{apptCount}</span>
           </div>
         </div>
 
@@ -128,8 +101,7 @@ export function AdminClinic({ setScreen, specialty = 'عظام', color = '#148C9
         </div>
 
         {/* Doctor list */}
-        {loading && <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '16px' }}>جاري التحميل...</p>}
-        {!loading && filtered.length === 0 && (
+        {filtered.length === 0 && (
           <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '16px' }}>لا يوجد أطباء في هذا القسم</p>
         )}
 

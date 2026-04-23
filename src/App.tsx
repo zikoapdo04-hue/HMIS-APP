@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import './App.css';
 import type { Screen, Role } from './types';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -30,14 +31,14 @@ import { AdminPatients } from './screens/admin/AdminPatients';
 import { AdminClinic } from './screens/admin/AdminClinic';
 
 const NO_BACK: Screen[] = [
-  'splash', 'onboarding', 'role',
-  'doctor-home', 'patient-home', 'admin-home',
+  'splash', 'onboarding', 'role'
 ];
 const NO_HISTORY: Screen[] = ['splash', 'onboarding'];
 
 /* ─── Inner app (has access to AuthContext) ─────────────── */
 function AppInner() {
   const { user, loading } = useAuth();
+  const { t, i18n } = useTranslation();
   const [screen, setScreen] = useState<Screen>('splash');
   const [role, setRole] = useState<Role>('patient');
   const [transitioning, setTransitioning] = useState(false);
@@ -45,6 +46,12 @@ function AppInner() {
   const [clinicColor, setClinicColor] = useState('#E57373');
   const historyStack = useRef<Screen[]>(['splash']);
   const sessionRouted = useRef(false);
+
+  /* Set document direction based on language */
+  useEffect(() => {
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
   /* Auto-route when Firebase session is restored */
   useEffect(() => {
@@ -114,8 +121,8 @@ function AppInner() {
       case 'onboarding':               return <Onboarding setScreen={nav} />;
       case 'role':                     return <RoleSelection setScreen={nav} setRole={setRole} />;
       case 'login':                    return <Login setScreen={nav} role={role} />;
-      case 'register':                 return <Register setScreen={nav} />;
-      case 'register-doctor':          return <RegisterDoctor setScreen={nav} setRole={setRole} />;
+      case 'register':                 return <Register setScreen={nav} role={role} />;
+      case 'register-doctor':          return <RegisterDoctor setScreen={nav} role={role} />;
       case 'doctor-home':              return <DoctorHome setScreen={nav} />;
       case 'doctor-records':           return <DoctorRecords setScreen={nav} />;
       case 'doctor-profile':           return <DoctorProfile setScreen={nav} />;
@@ -145,9 +152,10 @@ function AppInner() {
         {renderScreen()}
       </div>
       {showBack && (
-        <button className="global-back-btn" onClick={goBack} aria-label="back" title="رجوع">
+        <button className="global-back-btn" onClick={goBack} aria-label="back" title={t('common.back')}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+            stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: i18n.language === 'en' ? 'rotate(180deg)' : 'none' }}>
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
