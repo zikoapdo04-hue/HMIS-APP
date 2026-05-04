@@ -1,112 +1,114 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 
 interface Props { setScreen: (s: Screen) => void }
 
-interface Doctor {
-  uid:       string;
-  name:      string;
-  specialty: string;
-  days:      string;
-  address:   string;
-  rating:    number;
-}
-
-const MOCK_DOCTORS: Doctor[] = [
-  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', days: 'الاحد، الثلاثاء', address: 'عيادة دجلة', rating: 4.8 },
-  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', days: 'الاثنين، الاربعاء', address: 'مستشفى السلام', rating: 4.9 },
-  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', days: 'السبت، الخميس', address: 'العيادات التخصصية', rating: 4.5 },
-];
-
 export function AdminDoctors({ setScreen }: Props) {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [query, setQuery]     = useState('');
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    // Load mock data
-    setDoctors(MOCK_DOCTORS);
-  }, []);
-
-  const filtered = doctors.filter(d =>
-    d.name.includes(query) || d.specialty.includes(query) || d.address.includes(query)
-  );
+  const doctors = [
+    { id: '447', name: 'د.مصطفي محمد', specialty: 'تخصص قلب', phone: '01144748738', avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=100&auto=format&fit=crop' },
+    { id: '908', name: 'د.انس احمد', specialty: 'تخصص عظام', phone: '01283693461', avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=100&auto=format&fit=crop' },
+    { id: '689', name: 'د.احمد ناصر', specialty: 'تخصص اطفال', phone: '01123872198', avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=100&auto=format&fit=crop' },
+  ];
 
   return (
-    <div className="admin-screen" style={{ background: '#ffffff', height: '100%', display: 'flex', flexDirection: 'column' }}>
-
-      {/* Top Header Section */}
-      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-          <HMISGlobe size={90} />
-          <span style={{ fontFamily: 'Inter', fontSize: 52, fontWeight: 300, color: '#168A9E', letterSpacing: '2px' }}>HMIS</span>
-          <HMISShieldLogo size={60} />
+    <div className="admin-dash-screen">
+      {/* Header */}
+      <div className="admin-dash-header">
+        <div className="admin-dash-logo">
+          <HMISGlobe size={60} color="#1DB8C8" />
+          <span className="admin-dash-hmis">HMIS</span>
+          <HMISShieldLogo size={46} color="#1DB8C8" />
         </div>
-
-        <div style={{ width: '100%', textAlign: 'right', marginTop: '16px' }}>
-          <h2 style={{ fontFamily: 'Cairo', fontSize: 32, fontWeight: 800, color: '#168A9E', margin: 0 }}>ادارة الاطباء</h2>
-        </div>
-
-        {/* Search */}
-        <div dir="rtl" style={{ marginTop: '20px', background: '#E6EEF5', borderRadius: '24px', display: 'flex', alignItems: 'center', height: '64px', padding: '6px', width: '100%' }}>
-          <input
-            type="text"
-            placeholder="ابحث عن الطبيب"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            style={{ flex: 1, border: 'none', background: 'transparent', padding: '0 20px', fontSize: 18, fontFamily: 'Cairo', fontWeight: 600, outline: 'none', color: '#1A202C' }}
+        <div className="admin-dash-profile">
+          <div className="admin-dash-profile-info">
+            <span className="admin-dash-role">المدير</span>
+            <span className="admin-dash-name">Admin</span>
+          </div>
+          <img 
+            src="https://ui-avatars.com/api/?name=Admin&background=random&size=100" 
+            alt="Admin" 
+            className="admin-dash-avatar"
           />
-          <button style={{ width: '56px', height: '56px', background: '#168A9E', border: 'none', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-              stroke="#1A202C" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </div>
+      </div>
+      
+      {/* Date */}
+      <div className="admin-dash-date-wrap">
+        <span className="admin-dash-day">الاثنين</span>
+        <span className="admin-dash-date">10-3-2026</span>
+      </div>
+
+      <div className="admin-dash-content">
+        {/* Search */}
+        <div className="admin-search-bar" dir="rtl">
+          <button className="admin-search-icon-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-        {/* Header */}
-        <div dir="rtl" style={{ display: 'flex', background: '#E6EEF5', borderRadius: '20px', padding: '16px', alignItems: 'center', fontFamily: 'Cairo', fontWeight: 700, fontSize: 18, color: '#1A202C' }}>
-          <div style={{ flex: 1.5, textAlign: 'right', paddingRight: '8px' }}>الاسم</div>
-          <div style={{ flex: 1.2, textAlign: 'center' }}>التخصص</div>
-          <div style={{ flex: 1.2, textAlign: 'center' }}>المواعيد</div>
-          <div style={{ flex: 1.5, textAlign: 'center' }}>موقع العيادة</div>
-          <div style={{ flex: 1,   textAlign: 'center' }}>التقييم</div>
+          <input 
+            type="text" 
+            placeholder="ابحث عن طبيب" 
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)}
+            className="admin-search-input"
+          />
         </div>
 
-        {filtered.length === 0 && (
-          <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: '24px' }}>لا يوجد أطباء</p>
-        )}
+        {/* Doctors List */}
+        <div className="admin-patients-list">
+          {doctors.map(d => (
+            <div key={d.id} className="admin-patient-card" dir="rtl">
+              <img src={d.avatar} alt={d.name} className="admin-patient-avatar" />
+              
+              <div className="admin-patient-info" style={{ alignItems: 'center', cursor: 'pointer' }} onClick={() => setScreen('admin-doctor-detail')}>
+                <span className="admin-patient-name" style={{ fontSize: 20 }}>{d.name}</span>
+                <span className="admin-patient-phone" style={{ marginTop: 0, fontWeight: 600 }}>{d.specialty}</span>
+                <span className="admin-patient-id" style={{ marginTop: 4 }}>{d.id} ID</span>
+                <span className="admin-patient-phone" style={{ marginTop: 0 }}>
+                  {d.phone}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{marginRight: 4}}>
+                    <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                  </svg>
+                </span>
+              </div>
 
-        {filtered.map((dr) => (
-          <div key={dr.uid} dir="rtl" style={{ display: 'flex', background: '#DFE2E6', borderRadius: '20px', padding: '16px', alignItems: 'center', fontFamily: 'Cairo', fontWeight: 600, fontSize: 16, color: '#4A5568' }}>
-            <div style={{ flex: 1.5, textAlign: 'right', color: '#168A9E', fontWeight: 700, paddingRight: '8px', whiteSpace: 'nowrap' }}>{dr.name}</div>
-            <div style={{ flex: 1.2, textAlign: 'center' }}>{dr.specialty}</div>
-            <div style={{ flex: 1.2, textAlign: 'center', fontFamily: 'Cairo' }}>{dr.days || '—'}</div>
-            <div style={{ flex: 1.5, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dr.address || '—'}</div>
-            <div style={{ flex: 1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ECC94B" stroke="#ECC94B">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-              <span style={{ fontFamily: 'Inter', color: '#1A202C', paddingTop: '2px' }}>{dr.rating}</span>
+              <div className="admin-doctor-actions">
+                <button className="admin-btn-edit">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button className="admin-btn-delete">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
       </div>
 
-      {/* Bottom nav */}
-      <nav dir="rtl" style={{ padding: '24px 16px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '12px', background: '#fff' }}>
-        <button style={{ flex: 1, padding: '16px 0', border: 'none', borderRadius: '24px', background: '#168A9E', color: 'white', fontFamily: 'Cairo', fontWeight: 700, fontSize: 18, cursor: 'pointer' }}>
-          ادارة الاطباء
+      {/* Bottom Navigation */}
+      <nav className="admin-bottom-nav" dir="rtl">
+        <button className="admin-nav-item" onClick={() => setScreen('admin-home')}>
+          ادارة الحسابات
         </button>
-        <button onClick={() => setScreen('admin-patients')} style={{ flex: 1, padding: '16px 0', border: 'none', borderRadius: '24px', background: '#DFE2E6', color: '#1A202C', fontFamily: 'Cairo', fontWeight: 700, fontSize: 18, cursor: 'pointer' }}>
+        <button className="admin-nav-item" onClick={() => setScreen('admin-patients')}>
           ادارة المرضي
         </button>
-        <button onClick={() => setScreen('admin-home')} style={{ flex: 1, padding: '16px 0', border: 'none', borderRadius: '24px', background: '#DFE2E6', color: '#1A202C', fontFamily: 'Cairo', fontWeight: 700, fontSize: 18, cursor: 'pointer' }}>
-          ادارة الحسابات
+        <button className="admin-nav-item active">
+          ادارة الاطباء
         </button>
       </nav>
     </div>

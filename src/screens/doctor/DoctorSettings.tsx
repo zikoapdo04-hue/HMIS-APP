@@ -16,7 +16,7 @@ export function DoctorSettings({ setScreen }: Props) {
 
   const handleLogout = async () => {
     await logout();
-    setScreen('role');
+    setScreen('login');
   };
 
   return (

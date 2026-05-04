@@ -11,14 +11,15 @@ interface Doctor {
   specialty: string;
   rating:    number;
   phone:     string;
+  avatar?:   string;
 }
 
 const ALL_DOCTORS: Doctor[] = [
-  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', rating: 4.8, phone: '01012345678' },
-  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', rating: 4.9, phone: '01123456789' },
-  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', rating: 4.5, phone: '01234567890' },
-  { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, phone: '01512345678' },
-  { uid: '5', name: 'د. هند علي', specialty: 'نساء وتوليد', rating: 4.9, phone: '01098765432' },
+  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', rating: 4.8, phone: '01012345678', avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=150&auto=format&fit=crop' },
+  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', rating: 4.9, phone: '01123456789', avatar: 'https://images.unsplash.com/photo-1594824436951-7f12620cecef?q=80&w=150&auto=format&fit=crop' },
+  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', rating: 4.5, phone: '01234567890', avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=150&auto=format&fit=crop' },
+  { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, phone: '01512345678', avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=150&auto=format&fit=crop' },
+  { uid: '5', name: 'د. هند علي', specialty: 'نساء وتوليد', rating: 4.9, phone: '01098765432', avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=150&auto=format&fit=crop' },
 ];
 
 export function PatientSearch({ setScreen, onSelectDoctor }: Props) {
@@ -81,7 +82,7 @@ export function PatientSearch({ setScreen, onSelectDoctor }: Props) {
                   </div>
                 </div>
                 <div className="clinic-dr-img">
-                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(dr.name)}&background=random`} alt={dr.name} />
+                  <img src={dr.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(dr.name)}&background=random`} alt={dr.name} />
                 </div>
               </div>
             ))}

@@ -1,23 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import type { Screen } from '../../types';
+import type { Screen, PatientInfo } from '../../types';
 
-interface Props { setScreen: (s: Screen) => void }
+interface Props {
+  setScreen: (s: Screen) => void;
+  onSelectPatient: (p: PatientInfo) => void;
+}
 
 interface Appointment {
   id:          string;
   patientName: string;
   time:        string;
   num:         number;
+  patientId:   string;
+  phone:       string;
+  email:       string;
 }
 
 const MOCK_TODAY_APPTS: Appointment[] = [
-  { id: '1', patientName: 'أحمد محمود', time: '10:00 ص', num: 1 },
-  { id: '2', patientName: 'سارة محمد', time: '11:30 ص', num: 2 },
-  { id: '3', patientName: 'عمر علي', time: '01:00 م', num: 3 },
+  { id: '1', patientId: 'p1', patientName: 'أحمد محمود',  time: '10:00 ص', num: 1, phone: '01012345678', email: 'ahmed@gmail.com' },
+  { id: '2', patientId: 'p2', patientName: 'سارة محمد',   time: '11:30 ص', num: 2, phone: '01198765432', email: 'sara@gmail.com'  },
+  { id: '3', patientId: 'p3', patientName: 'عمر علي',     time: '01:00 م', num: 3, phone: '01223344556', email: 'omar@gmail.com'  },
 ];
 
-export function DoctorHome({ setScreen }: Props) {
+export function DoctorHome({ setScreen, onSelectPatient }: Props) {
   const { user } = useAuth();
   const [todayAppts, setTodayAppts] = useState<Appointment[]>([]);
 
@@ -28,8 +34,12 @@ export function DoctorHome({ setScreen }: Props) {
 
   const doctorName = user?.name ?? 'الطبيب';
 
-  const Card = ({ num, patientName, time }: Appointment) => (
-    <div className="dash-card" dir="rtl" onClick={() => setScreen('patient-profile')}>
+  const handleCardClick = (a: Appointment) => {
+    onSelectPatient({ id: a.patientId, name: a.patientName, phone: a.phone, email: a.email, num: a.num });
+  };
+
+  const Card = ({ num, patientName, time, ...rest }: Appointment) => (
+    <div className="dash-card" dir="rtl" onClick={() => handleCardClick({ num, patientName, time, ...rest })}>
       <img
         src={`https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=random`}
         alt={patientName}

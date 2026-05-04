@@ -14,7 +14,6 @@ export type Screen =
   | 'patient-search'
   | 'clinics'
   | 'notifications'
-  | 'support'
   | 'doctor-detail'
   | 'book-appointment'
   | 'booking-success'
@@ -24,6 +23,16 @@ export type Screen =
   | 'admin-home'
   | 'admin-doctors'
   | 'admin-patients'
+  | 'admin-patient-detail'
+  | 'admin-doctor-detail'
   | 'admin-clinic';
 
 export type Role = 'doctor' | 'patient' | 'admin';
+
+export interface PatientInfo {
+  id:    string;
+  name:  string;
+  phone: string;
+  email: string;
+  num:   number;
+}

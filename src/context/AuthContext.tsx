@@ -16,17 +16,20 @@ export interface UserProfile {
   address?:   string;
   rating?:    number;
   days?:      string;
+  // shared
+  photoURL?:  string;
 }
 
 interface AuthContextValue {
-  user:    UserProfile | null;
-  loading: boolean;
-  login:   (profile: UserProfile) => void;
-  logout:  () => void;
+  user:       UserProfile | null;
+  loading:    boolean;
+  login:      (profile: UserProfile) => void;
+  logout:     () => void;
+  updateUser: (updates: Partial<UserProfile>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
-  user: null, loading: true, login: () => {}, logout: () => {}
+  user: null, loading: true, login: () => {}, logout: () => {}, updateUser: () => {}
 });
 
 export function useAuth() {
@@ -49,8 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const updateUser = (updates: Partial<UserProfile>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : prev);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

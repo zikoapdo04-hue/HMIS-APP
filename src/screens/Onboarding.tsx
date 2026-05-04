@@ -37,7 +37,7 @@ export function Onboarding({ setScreen }: Props) {
 
   const goNext = () => {
     if (slide < slides.length - 1) { setImgKey(k => k + 1); setSlide(s => s + 1); }
-    else setScreen('role');
+    else setScreen('login');
   };
   const goSlide = (i: number) => { setImgKey(k => k + 1); setSlide(i); };
 
@@ -54,7 +54,7 @@ export function Onboarding({ setScreen }: Props) {
         </div>
       </div>
       <div className="onboard-right">
-        <button className="skip-btn" onClick={() => setScreen('role')}>{t('onboarding.skip')}</button>
+        <button className="skip-btn" onClick={() => setScreen('login')}>{t('onboarding.skip')}</button>
         <div className="onboard-body">
           <div className="icon-badge" key={slide + 'icon'}>{slides[slide].icon}</div>
           <h1 className="onboard-title" key={slide + 't'}>{slides[slide].title}</h1>

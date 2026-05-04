@@ -5,17 +5,18 @@ import type { Screen } from '../../types';
 interface Props { setScreen: (s: Screen) => void }
 
 interface Appointment {
-  id:         string;
-  doctorName: string;
-  specialty:  string;
-  date:       string;
-  time:       string;
-  address:    string;
+  id:          string;
+  patientName: string;
+  doctorName:  string;
+  specialty:   string;
+  date:        string;
+  time:        string;
+  address:     string;
 }
 
 const MOCK_APPOINTMENTS: Appointment[] = [
-  { id: '1', doctorName: 'د. خالد توفيق', specialty: 'جراحة عامة', date: '21-12-2023', time: '04:30PM', address: 'عيادة دجلة' },
-  { id: '2', doctorName: 'د. منى حسن', specialty: 'اطفال', date: '25-12-2023', time: '10:00AM', address: 'مستشفى السلام' },
+  { id: '1', patientName: 'أحمد محمد', doctorName: 'د. خالد توفيق', specialty: 'جراحة عامة', date: '21-12-2023', time: '04:30PM', address: 'عيادة دجلة' },
+  { id: '2', patientName: 'أحمد محمد', doctorName: 'د. منى حسن', specialty: 'اطفال', date: '25-12-2023', time: '10:00AM', address: 'مستشفى السلام' },
 ];
 
 export function PatientAppointments({ setScreen }: Props) {
@@ -64,7 +65,7 @@ export function PatientAppointments({ setScreen }: Props) {
             </div>
             <div className="appt-info-row">
               <span className="appt-label">اسم المريض : </span>
-              <span className="appt-val-blue">{user?.name ?? ''}</span>
+              <span className="appt-val-blue">{appt.patientName}</span>
             </div>
             <div className="appt-location">
               <svg className="appt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

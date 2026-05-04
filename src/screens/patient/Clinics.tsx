@@ -12,16 +12,17 @@ interface Doctor {
   rating:    number;
   address:   string;
   phone:     string;
+  avatar?:   string;
 }
 
 const MOCK_DOCTORS: Doctor[] = [
-  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', rating: 4.8, address: 'عيادة الدقي', phone: '01012345678' },
-  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', rating: 4.9, address: 'عيادة المهندسين', phone: '01123456789' },
-  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', rating: 4.5, address: 'العيادات التخصصية', phone: '01234567890' },
-  { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, address: 'مستشفى السلام', phone: '01512345678' },
+  { uid: '1', name: 'د. خالد عبدالله', specialty: 'عظام', rating: 4.8, address: 'عيادة الدقي', phone: '01012345678', avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=150&auto=format&fit=crop' },
+  { uid: '2', name: 'د. منى حسن', specialty: 'اطفال', rating: 4.9, address: 'عيادة المهندسين', phone: '01123456789', avatar: 'https://images.unsplash.com/photo-1594824436951-7f12620cecef?q=80&w=150&auto=format&fit=crop' },
+  { uid: '3', name: 'د. ياسر إبراهيم', specialty: 'مخ واعصاب', rating: 4.5, address: 'العيادات التخصصية', phone: '01234567890', avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=150&auto=format&fit=crop' },
+  { uid: '4', name: 'د. سمير محمود', specialty: 'القلب', rating: 4.7, address: 'مستشفى السلام', phone: '01512345678', avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=150&auto=format&fit=crop' },
 ];
 
-export function Clinics({ setScreen, onSelectDoctor }: Props) {
+export function Clinics({ setScreen, onSelectDoctor, specialty }: Props) {
   const [doctors, setDoctors]   = useState<Doctor[]>([]);
   const [search, setSearch]     = useState('');
 
@@ -35,7 +36,7 @@ export function Clinics({ setScreen, onSelectDoctor }: Props) {
 
   return (
     <div className="search-screen">
-      <header className="search-top-bar"><h2>الأطباء</h2></header>
+      <header className="search-top-bar"><h2>{specialty ? `أطباء عيادة ${specialty}` : 'الأطباء'}</h2></header>
       <div className="search-main-content">
         <div className="p-search-container" dir="rtl" style={{ marginBottom: '24px' }}>
           <div className="p-search-box">
@@ -72,7 +73,7 @@ export function Clinics({ setScreen, onSelectDoctor }: Props) {
                 </div>
               </div>
               <div className="clinic-dr-img">
-                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(dr.name)}&background=random`} alt={dr.name} />
+                <img src={dr.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(dr.name)}&background=random`} alt={dr.name} />
               </div>
             </div>
           ))}

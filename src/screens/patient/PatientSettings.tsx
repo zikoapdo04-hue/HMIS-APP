@@ -8,7 +8,7 @@ export function PatientSettings({ setScreen }: Props) {
 
   const handleLogout = async () => {
     await logout();
-    setScreen('role');
+    setScreen('login');
   };
 
   return (
@@ -24,7 +24,6 @@ export function PatientSettings({ setScreen }: Props) {
           { label: 'اعداد الحساب',      action: () => setScreen('patient-account-settings') },
           { label: 'كلمة السر',          action: undefined },
           { label: 'اعداد الاشعارات',    action: undefined },
-          { label: 'المساعدة والدعم',    action: () => setScreen('support') },
         ].map((item, i) => (
           <button key={i} onClick={item.action} style={{ width: '100%', background: '#EAF0F6', borderRadius: '16px', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', cursor: 'pointer' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A5568" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
