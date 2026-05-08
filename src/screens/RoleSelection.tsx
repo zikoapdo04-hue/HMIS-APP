@@ -44,7 +44,7 @@ export function RoleSelection({ setScreen, setRole }: Props) {
           </button>
 
           {/* Admin */}
-          <button id="admin-btn" className="role-btn role-btn-admin" onClick={() => { setRole('admin'); setScreen('admin-home'); }}>
+          <button id="admin-btn" className="role-btn role-btn-admin" onClick={() => { setRole('admin'); setScreen('login'); }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DB8C8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
               <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>

@@ -1,108 +1,175 @@
 import { useState } from 'react';
+import { Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
+import { appointmentService } from '../../services/appointment.service';
+import { AppointmentStatus, UserRole } from '../../core/enums';
+import { COLORS, GRADIENTS, SHADOWS, RADIUS, FONT } from '../../core/theme';
 import type { Screen } from '../../types';
 import type { DoctorInfo } from './DoctorDetail';
 
-interface Props { setScreen: (s: Screen) => void; doctor?: DoctorInfo | null }
+interface Props { setScreen: (s: Screen) => void; onBack?: () => void; doctor?: DoctorInfo | null }
 
 const TIME_SLOTS = ['04:00PM','04:30PM','05:00PM','05:30PM','06:00PM','06:30PM','07:00PM','07:30PM'];
-// Slots already taken
-const TAKEN = new Set(['04:00PM','05:00PM','07:00PM']);
 
-export function BookAppointment({ setScreen, doctor }: Props) {
+export function BookAppointment({ setScreen, onBack, doctor }: Props) {
   const { user } = useAuth();
   const [selectedTime, setSelectedTime] = useState('04:30PM');
   const [symptoms, setSymptoms]         = useState('');
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
+  const [takenSlots, setTakenSlots]     = useState<Set<string>>(new Set());
 
-  // Use passed doctor or fallback mock
-  const DOCTOR_NAME    = doctor?.name      ?? 'خالد توفيق';
-  const SPECIALTY      = doctor?.specialty ?? 'جراحة عامة';
-  const RATING         = doctor?.rating    ?? 5;
-  const AVAILABLE_DAYS = ['الاثنين', 'الاربع'];
-  const avatarUrl      = `https://ui-avatars.com/api/?name=${encodeURIComponent(DOCTOR_NAME)}&background=random`;
+  const DOCTOR_NAME = doctor?.name      ?? '—';
+  const SPECIALTY   = doctor?.specialty ?? '—';
+  const RATING      = doctor?.rating    ?? 0;
+  const avatarSrc   = doctor?.avatar
+    ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(DOCTOR_NAME)}&background=0D9BAB&color=fff`;
 
-  const today = new Date();
-  const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+  const today   = new Date();
+  const dateStr = today.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  const handleConfirm = () => {
-    if (!user) { setError('يجب تسجيل الدخول أولاً'); return; }
-    setLoading(true);
-    setError('');
+  const handleConfirm = async () => {
+    if (!user || !doctor) { setError('بيانات الطبيب غير متاحة'); return; }
+    setLoading(true); setError('');
+    try {
+      const [timePart, period] = [selectedTime.slice(0, -2), selectedTime.slice(-2)];
+      const [h, m] = timePart.split(':').map(Number);
+      const hours  = period === 'PM' && h !== 12 ? h + 12 : (period === 'AM' && h === 12 ? 0 : h);
+      const apptDate = new Date(today);
+      apptDate.setHours(hours, m, 0, 0);
 
-    setTimeout(() => {
+      await appointmentService.create({
+        patientId: user.id, patientUserId: user.id, patientName: user.name,
+        patientPhone: user.phone, patientImageUrl: user.imageUrl ?? null,
+        doctorId: doctor.uid, doctorName: DOCTOR_NAME, doctorSpecialty: SPECIALTY,
+        doctorImageUrl: doctor.avatar ?? null,
+        date: Timestamp.fromDate(apptDate), time: selectedTime,
+        number: Math.floor(Math.random() * 20) + 1, symptoms,
+        status: AppointmentStatus.Pending, address: doctor.address ?? '—',
+        timeSlotId: null, actorRole: UserRole.Patient, createdBy: user.id,
+        updatedAt: Timestamp.fromDate(new Date()), attachments: [],
+      });
+
+      setTakenSlots(prev => new Set(prev).add(selectedTime));
       setScreen('booking-success');
+    } catch {
+      setError('حدث خطأ، يرجى المحاولة مجدداً');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
-    <div className="booking-screen">
-      <header className="booking-header"><h2>احجز مع الطبيب</h2></header>
-      <div className="booking-content">
-        <div className="bk-doc-card">
-          <div className="bk-doc-rating">
-            <span className="rating-num">{RATING}</span>
-            <svg viewBox="0 0 24 24" fill="#ECC94B" stroke="#ECC94B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <div className="bk-doc-info">
-            <div className="bk-doc-text">
-              <span className="bk-doc-name">{DOCTOR_NAME}</span>
-              <span className="bk-doc-spec">{SPECIALTY}</span>
+    <div style={{ background: COLORS.bg, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+      {/* Header */}
+      <header style={{ background: GRADIENTS.heroBg, padding: '20px 20px 24px', flexShrink: 0, boxShadow: SHADOWS.header, borderRadius: `0 0 ${RADIUS.xxl} ${RADIUS.xxl}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => onBack ? onBack() : setScreen('doctor-detail')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: RADIUS.sm, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          {/* Doctor mini card */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }} dir="rtl">
+            <img src={avatarSrc} alt={DOCTOR_NAME} style={{ width: 52, height: 52, borderRadius: RADIUS.full, objectFit: 'cover', border: '2.5px solid rgba(255,255,255,0.6)', flexShrink: 0 }} />
+            <div>
+              <p style={{ fontFamily: FONT.cairo, fontSize: 17, fontWeight: 800, color: 'white', margin: '0 0 2px' }}>{DOCTOR_NAME}</p>
+              <p style={{ fontFamily: FONT.cairo, fontSize: 13, color: 'rgba(255,255,255,0.8)', margin: 0 }}>{SPECIALTY}</p>
             </div>
-            <img src={avatarUrl} alt={DOCTOR_NAME} className="bk-doc-avatar" />
+            <div style={{ marginRight: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={COLORS.star}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span style={{ fontFamily: FONT.inter, fontSize: 13, fontWeight: 700, color: 'white' }}>{RATING}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Scrollable form */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 16px' }}>
+
+        {/* Form fields */}
+        <div style={{ background: COLORS.card, border: `1.5px solid ${COLORS.cardBorder}`, borderRadius: RADIUS.xl, padding: '20px 16px', boxShadow: SHADOWS.card, marginBottom: 16 }} dir="rtl">
+          <p style={{ fontFamily: FONT.cairo, fontSize: 16, fontWeight: 800, color: COLORS.textPrimary, margin: '0 0 16px' }}>بيانات الحجز</p>
+
+          {/* Patient name */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontFamily: FONT.cairo, fontSize: 13, fontWeight: 700, color: COLORS.textSec, display: 'block', marginBottom: 6 }}>اسم المريض</label>
+            <div style={{ background: COLORS.inputBg, borderRadius: RADIUS.md, padding: '12px 16px', fontFamily: FONT.cairo, fontSize: 15, fontWeight: 600, color: COLORS.textPrimary }}>
+              {user?.name ?? ''}
+            </div>
+          </div>
+
+          {/* Date */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontFamily: FONT.cairo, fontSize: 13, fontWeight: 700, color: COLORS.textSec, display: 'block', marginBottom: 6 }}>تاريخ الحجز</label>
+            <div style={{ background: COLORS.inputBg, borderRadius: RADIUS.md, padding: '12px 16px', fontFamily: FONT.cairo, fontSize: 15, fontWeight: 600, color: COLORS.textPrimary }}>
+              {dateStr}
+            </div>
+          </div>
+
+          {/* Symptoms */}
+          <div>
+            <label style={{ fontFamily: FONT.cairo, fontSize: 13, fontWeight: 700, color: COLORS.textSec, display: 'block', marginBottom: 6 }}>أعراض الحالة</label>
+            <textarea
+              placeholder="اكتب أعراضك هنا..."
+              value={symptoms}
+              onChange={e => setSymptoms(e.target.value)}
+              rows={3}
+              style={{ width: '100%', background: COLORS.inputBg, border: `1.5px solid transparent`, borderRadius: RADIUS.md, padding: '12px 16px', fontFamily: FONT.cairo, fontSize: 15, fontWeight: 500, color: COLORS.textPrimary, outline: 'none', resize: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+              onFocus={e => e.currentTarget.style.borderColor = COLORS.primary}
+              onBlur={e => e.currentTarget.style.borderColor = 'transparent'}
+            />
           </div>
         </div>
 
-        <h3 className="bk-section-title">ادخال بيانات الحجز</h3>
-        <div className="bk-form">
-          <div className="bk-field">
-            <span className="bk-label">اسم المريض</span>
-            <input type="text" value={user?.name ?? ''} readOnly className="bk-input" />
-          </div>
-          <div className="bk-field">
-            <span className="bk-label">اعراض الحالة</span>
-            <input type="text" placeholder="اكتب أعراضك" value={symptoms} onChange={e => setSymptoms(e.target.value)} className="bk-input" />
-          </div>
-          <div className="bk-field">
-            <span className="bk-label">تاريخ الحجز</span>
-            <input type="text" value={dateStr} readOnly className="bk-input" />
+        {/* Time slots */}
+        <div style={{ background: COLORS.card, border: `1.5px solid ${COLORS.cardBorder}`, borderRadius: RADIUS.xl, padding: '20px 16px', boxShadow: SHADOWS.card }} dir="rtl">
+          <p style={{ fontFamily: FONT.cairo, fontSize: 16, fontWeight: 800, color: COLORS.textPrimary, margin: '0 0 14px' }}>اختر الوقت</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {TIME_SLOTS.map(t => {
+              const taken  = takenSlots.has(t);
+              const active = selectedTime === t && !taken;
+              return (
+                <button
+                  key={t}
+                  onClick={() => !taken && setSelectedTime(t)}
+                  disabled={taken}
+                  style={{
+                    padding: '10px 4px', border: 'none', borderRadius: RADIUS.md,
+                    fontFamily: FONT.inter, fontSize: 12, fontWeight: 700, cursor: taken ? 'not-allowed' : 'pointer',
+                    background: taken ? '#F1F5F9' : active ? COLORS.primary : COLORS.inputBg,
+                    color: taken ? COLORS.textMuted : active ? 'white' : COLORS.textSec,
+                    boxShadow: active ? SHADOWS.btn : 'none',
+                    opacity: taken ? 0.5 : 1,
+                    transition: 'all 0.18s',
+                    textDecoration: taken ? 'line-through' : 'none',
+                  }}
+                >
+                  {t}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="bk-days-row">
-          {AVAILABLE_DAYS.map(day => (
-            <button key={day} className="bk-day-btn inactive">{day}</button>
-          ))}
-        </div>
+        {error && (
+          <p style={{ fontFamily: FONT.cairo, color: COLORS.danger, textAlign: 'center', fontSize: 14, margin: '12px 0 0', fontWeight: 600 }}>{error}</p>
+        )}
+      </div>
 
-        <div className="bk-time-grid">
-          {TIME_SLOTS.map(t => {
-            const taken  = TAKEN.has(t);
-            const active = selectedTime === t && !taken;
-            return (
-              <button
-                key={t}
-                className={`bk-time-pill ${active ? 'active' : 'inactive'} ${taken ? 'crossed' : ''}`}
-                onClick={() => !taken && setSelectedTime(t)}
-                disabled={taken}
-              >
-                {t}
-              </button>
-            );
-          })}
-        </div>
-
-        {error && <p style={{ color: '#e53e3e', fontFamily: 'Cairo', textAlign: 'center', fontSize: 14 }}>{error}</p>}
-
+      {/* Confirm button */}
+      <div style={{ padding: '16px 16px 24px', flexShrink: 0, background: COLORS.navBg, borderTop: `1.5px solid ${COLORS.navBorder}` }}>
         <button
-          className="bk-confirm-submit"
           onClick={handleConfirm}
-          disabled={loading}
-          style={{ opacity: loading ? 0.7 : 1 }}
+          disabled={loading || !doctor}
+          style={{
+            width: '100%', padding: '18px', background: loading ? COLORS.textMuted : GRADIENTS.primarySm,
+            color: 'white', border: 'none', borderRadius: RADIUS.pill,
+            fontFamily: FONT.cairo, fontSize: 18, fontWeight: 800,
+            cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : SHADOWS.btn,
+            transition: 'all 0.2s',
+          }}
         >
-          {loading ? '...' : 'تاكيد الحجز'}
+          {loading ? 'جاري الحجز...' : 'تأكيد الحجز'}
         </button>
       </div>
     </div>

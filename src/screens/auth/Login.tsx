@@ -7,7 +7,7 @@ import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 
 interface Props { setScreen: (s: Screen) => void; role: Role }
 
-export function Login({ setScreen, role }: Props) {
+export function Login({ setScreen, role: _role }: Props) {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -16,34 +16,29 @@ export function Login({ setScreen, role }: Props) {
   const { login } = useAuth();
   const { t } = useTranslation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) { setError(t('auth.errEmpty')); return; }
-
-    if (role === 'admin') {
-      if (email !== 'admin@hmis.com' || password !== 'admin123') {
-        setError(t('auth.errAdmin'));
-        return;
-      }
-    }
-
     setLoading(true);
     setError('');
-    
-    setTimeout(() => {
-      // Mock login validation
-      login({
-        uid: Math.random().toString(),
-        email: email,
-        name: 'مستخدم تجريبي',
-        role: role
-      });
-      
+    try {
+      const user = await login(email, password);
+      if (!user) { setError(t('auth.errEmpty')); return; }
       const home: Screen =
-        role === 'doctor' ? 'doctor-home' :
-        role === 'admin'  ? 'admin-home'  : 'patient-home';
+        user.role === 'doctor' ? 'doctor-home' :
+        user.role === 'admin'  ? 'admin-home'  : 'patient-home';
       setScreen(home);
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code ?? '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password') {
+        setError(t('auth.errAdmin'));
+      } else if (code === 'auth/user-not-found') {
+        setError(t('auth.errEmpty'));
+      } else {
+        setError(t('auth.errAdmin'));
+      }
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (

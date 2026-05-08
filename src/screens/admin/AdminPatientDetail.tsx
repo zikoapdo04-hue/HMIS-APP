@@ -5,6 +5,7 @@ import type { Screen, PatientInfo } from '../../types';
 interface Props {
   setScreen: (s: Screen) => void;
   patient?:  PatientInfo | null;
+  onBack?:   () => void;
 }
 
 interface Prescription {
@@ -16,7 +17,7 @@ interface Prescription {
   doctorName: string;
 }
 
-export function AdminPatientDetail({ setScreen, patient }: Props) {
+export function AdminPatientDetail({ setScreen, patient, onBack }: Props) {
   const { user } = useAuth();
   const patientName  = patient?.name  ?? 'احمد محمد';
   const patientEmail = patient?.email ?? 'ahmed@gmail.com';
@@ -114,7 +115,7 @@ export function AdminPatientDetail({ setScreen, patient }: Props) {
 
       {/* Header */}
       <div className="admin-detail-header" dir="rtl">
-        <button className="admin-detail-back" onClick={() => setScreen('admin-patients')}>
+        <button className="admin-detail-back" onClick={() => onBack ? onBack() : setScreen('admin-patients')}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}>
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>

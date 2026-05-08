@@ -8,40 +8,43 @@ import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 interface Props { setScreen: (s: Screen) => void; role: Role }
 
 export function Register({ setScreen, role }: Props) {
-  const [name, setName]         = useState('');
-  const [email, setEmail]       = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [city, setCity]         = useState('');
-  const [age, setAge]           = useState('');
-  const [phone, setPhone]       = useState('');
+  const [city, setCity] = useState('');
+  const [age, setAge] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { } = useAuth();
   const { t } = useTranslation();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!name || !email || !password || !phone) { setError(t('auth.errFill')); return; }
     setLoading(true);
     setError('');
-
-    setTimeout(() => {
-      login({
-        uid: Math.random().toString(),
-        email,
-        name,
-        role,
-        city,
-        age,
-        phone
-      });
-      
-      const home: Screen =
-        role === 'doctor' ? 'doctor-home' :
-        role === 'admin'  ? 'admin-home'  : 'patient-home';
+    try {
+      const { AuthService } = await import('../../services/auth.service');
+      if (role === 'doctor') {
+        await AuthService.registerDoctor({ name, email, password, phone, specialty: '', hospital: '', address: '' });
+      } else {
+        await AuthService.registerPatient({ name, email, password, phone, city, age: Number(age) || 0 });
+      }
+      const home: Screen = role === 'doctor' ? 'doctor-home' : 'patient-home';
       setScreen(home);
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code ?? '';
+      if (code === 'auth/email-already-in-use') {
+        setError(t('auth.errFill'));
+      } else if (code === 'auth/weak-password') {
+        setError(t('auth.errFill'));
+      } else {
+        setError(t('auth.errFill'));
+      }
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -62,14 +65,14 @@ export function Register({ setScreen, role }: Props) {
 
         <div className="auth-field"><input type="text" placeholder={t('auth.name')} value={name} onChange={e => setName(e.target.value)} className="auth-input" /></div>
         <div className="auth-field"><input type="email" placeholder={t('auth.email')} value={email} onChange={e => setEmail(e.target.value)} className="auth-input" /></div>
-        
+
         <div className="auth-field">
           <button type="button" className="eye-btn" onClick={() => setShowPass(p => !p)}>
             {showPass ? <EyeOpen /> : <EyeOff />}
           </button>
           <input type={showPass ? 'text' : 'password'} placeholder={t('auth.password')} value={password} onChange={e => setPassword(e.target.value)} className="auth-input with-icon" />
         </div>
-        
+
         <div className="auth-field"><input type="text" placeholder={t('auth.city')} value={city} onChange={e => setCity(e.target.value)} className="auth-input" /></div>
         <div className="auth-field"><input type="number" placeholder={t('auth.age')} value={age} onChange={e => setAge(e.target.value)} className="auth-input" /></div>
         <div className="auth-field"><input type="tel" placeholder={t('auth.phone')} value={phone} onChange={e => setPhone(e.target.value)} className="auth-input" /></div>

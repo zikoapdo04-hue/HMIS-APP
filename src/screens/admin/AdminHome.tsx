@@ -1,4 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { appointmentService } from '../../services/appointment.service';
+import { userService } from '../../services/user.service';
+import { formatDate, formatTime } from '../../utils/timestamp.utils';
+import { AppointmentStatus } from '../../core/enums';
+import type { AppointmentModel } from '../../models/appointment.model';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
 
@@ -7,20 +13,38 @@ interface Props {
 }
 
 export function AdminHome({ setScreen }: Props) {
-  const [appointments, setAppointments] = useState([
-    { id: 1, name: 'احمد محمد', doctor: 'خالد توفيق', specialty: 'قلب', date: 'الاثنين 10-4-2026', time: '04:00Pm', location: 'مدينة نصر' },
-    { id: 2, name: 'يوسف حمدي', doctor: 'انس احمد', specialty: 'عظام', date: 'الاثنين 10-4-2026', time: '05:30Pm', location: 'الدقي' },
-    { id: 3, name: 'احمد وليد', doctor: 'احمد ناصر', specialty: 'اطفال', date: 'الاثنين 10-4-2026', time: '06:00Pm', location: 'مصر الجديدة' },
-  ]);
+  const { user } = useAuth();
+  const [appointments, setAppointments] = useState<AppointmentModel[]>([]);
+  const [patientCount, setPatientCount] = useState(0);
+  const [doctorCount, setDoctorCount]   = useState(0);
+  const [loading, setLoading]           = useState(true);
 
-  const handleDelete = (id: number) => {
-    setAppointments(appointments.filter(a => a.id !== id));
+  useEffect(() => {
+    Promise.all([
+      appointmentService.getAll_admin(),
+      userService.getAllPatients(),
+      userService.getAllDoctors(),
+    ]).then(([appts, patients, doctors]) => {
+      setAppointments(appts);
+      setPatientCount(patients.length);
+      setDoctorCount(doctors.length);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    await appointmentService.cancelAppointment(id);
+    setAppointments(prev => prev.filter(a => a.id !== id));
   };
+
+  const today = new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+  const activeAppts = appointments.filter(a =>
+    a.status === AppointmentStatus.Pending || a.status === AppointmentStatus.Confirmed
+  );
 
   return (
     <div className="admin-dash-screen">
       
-      {/* Header */}
       <div className="admin-dash-header">
         <div className="admin-dash-logo">
           <HMISGlobe size={60} color="#1DB8C8" />
@@ -30,20 +54,18 @@ export function AdminHome({ setScreen }: Props) {
         <div className="admin-dash-profile">
           <div className="admin-dash-profile-info">
             <span className="admin-dash-role">المدير</span>
-            <span className="admin-dash-name">Admin</span>
+            <span className="admin-dash-name">{user?.name ?? 'Admin'}</span>
           </div>
-          <img 
-            src="https://ui-avatars.com/api/?name=Admin&background=random&size=100" 
-            alt="Admin" 
+          <img
+            src={user?.imageUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name ?? 'Admin')}&background=1DB8C8&color=fff&size=100`}
+            alt="Admin"
             className="admin-dash-avatar"
           />
         </div>
       </div>
-      
-      {/* Date */}
+
       <div className="admin-dash-date-wrap">
-        <span className="admin-dash-day">الاثنين</span>
-        <span className="admin-dash-date">10-3-2026</span>
+        <span className="admin-dash-date" dir="rtl">{today}</span>
       </div>
 
       {/* Scrollable Content */}
@@ -62,7 +84,7 @@ export function AdminHome({ setScreen }: Props) {
                 <circle cx="16" cy="16" r="4"></circle>
                 <polyline points="16 14 16 16 18 16"></polyline>
               </svg>
-              <span className="admin-stat-num">476</span>
+              <span className="admin-stat-num">{appointments.length}</span>
             </div>
           </div>
 
@@ -72,7 +94,7 @@ export function AdminHome({ setScreen }: Props) {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
-              <span className="admin-stat-num">389</span>
+              <span className="admin-stat-num">{patientCount}</span>
             </div>
           </div>
 
@@ -86,7 +108,7 @@ export function AdminHome({ setScreen }: Props) {
                 <circle cx="4" cy="8" r="3" fill="currentColor"/>
                 <path d="M2 16v-2c0-1.66 1.34-3 3-3h2c-1.66 0-3 1.34-3 3v2H2z" fill="currentColor"/>
               </svg>
-              <span className="admin-stat-num">50</span>
+              <span className="admin-stat-num">{doctorCount}</span>
             </div>
           </div>
         </div>
@@ -145,10 +167,15 @@ export function AdminHome({ setScreen }: Props) {
         {/* Appointments Section */}
         <div className="admin-appointments-section" dir="rtl">
           <h2 className="admin-appts-title">الكشفات</h2>
-          
+
+          {loading && <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: 16 }}>جاري التحميل...</p>}
+          {!loading && activeAppts.length === 0 && (
+            <p style={{ textAlign: 'center', fontFamily: 'Cairo', color: '#8898AA', padding: 16 }}>لا توجد حجوزات نشطة</p>
+          )}
+
           <div className="admin-appts-table">
             <div className="admin-appts-header">
-              <div style={{flex: 1.2}}>الاسم</div>
+              <div style={{flex: 1.2}}>المريض</div>
               <div style={{flex: 1.5}}>الطبيب</div>
               <div style={{flex: 1.5}}>المواعيد</div>
               <div style={{flex: 1.5}}>موقع العيادة</div>
@@ -156,18 +183,18 @@ export function AdminHome({ setScreen }: Props) {
             </div>
 
             <div className="admin-appts-list">
-              {appointments.map((appt) => (
+              {activeAppts.map((appt) => (
                 <div key={appt.id} className="admin-appt-row">
-                  <div style={{flex: 1.2, color: '#178CA1', fontWeight: 700, fontSize: 15}}>{appt.name}</div>
+                  <div style={{flex: 1.2, color: '#178CA1', fontWeight: 700, fontSize: 15}}>{appt.patientName}</div>
                   <div style={{flex: 1.5, display: 'flex', flexDirection: 'column', color: '#4A5568', fontSize: 14, fontWeight: 700}}>
-                    <span>{appt.doctor}</span>
-                    <span style={{fontSize: 12, fontWeight: 600}}>{appt.specialty}</span>
+                    <span>{appt.doctorName}</span>
+                    <span style={{fontSize: 12, fontWeight: 600}}>{appt.doctorSpecialty}</span>
                   </div>
                   <div style={{flex: 1.5, display: 'flex', flexDirection: 'column', color: '#4A5568', fontSize: 13, fontWeight: 600}}>
-                    <span>{appt.date}</span>
-                    <span>{appt.time}</span>
+                    <span>{formatDate(appt.date)}</span>
+                    <span>{formatTime(appt.date)}</span>
                   </div>
-                  <div style={{flex: 1.5, color: '#4A5568', fontWeight: 600, fontSize: 14}}>{appt.location}</div>
+                  <div style={{flex: 1.5, color: '#4A5568', fontWeight: 600, fontSize: 14}}>{appt.address || '—'}</div>
                   <div style={{flex: 1}}>
                     <button className="admin-appt-delete-btn" onClick={() => handleDelete(appt.id)}>حذف الحجز</button>
                   </div>
