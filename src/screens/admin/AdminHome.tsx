@@ -1,54 +1,196 @@
 import { useState } from 'react';
 import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo } from '../../components/Icons';
+import { useSettings } from '../../context/SettingsContext';
 
 interface Props {
   setScreen: (s: Screen) => void;
 }
 
-export function AdminHome({ setScreen }: Props) {
-  const [appointments, setAppointments] = useState([
-    { id: 1, name: 'احمد محمد', doctor: 'خالد توفيق', specialty: 'قلب', date: 'الاثنين 10-4-2026', time: '04:00Pm', location: 'مدينة نصر' },
-    { id: 2, name: 'يوسف حمدي', doctor: 'انس احمد', specialty: 'عظام', date: 'الاثنين 10-4-2026', time: '05:30Pm', location: 'الدقي' },
-    { id: 3, name: 'احمد وليد', doctor: 'احمد ناصر', specialty: 'اطفال', date: 'الاثنين 10-4-2026', time: '06:00Pm', location: 'مصر الجديدة' },
-  ]);
+const FONT_SIZES = [12, 14, 16, 18, 20];
 
-  const handleDelete = (id: number) => {
-    setAppointments(appointments.filter(a => a.id !== id));
-  };
+export function AdminHome({ setScreen }: Props) {
+  const { fontSize, setFontSize, darkMode, setDarkMode } = useSettings();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  /* ── theme tokens ── */
+  const bg       = darkMode ? '#1a202c' : '#f7fafc';
+  const cardBg   = darkMode ? '#2d3748' : '#ffffff';
+  const textMain = darkMode ? '#e2e8f0' : '#4A5568';
+  const textSub  = darkMode ? '#a0aec0' : '#718096';
+  const border   = darkMode ? '#4a5568' : '#E2E8F0';
+  const menuBg   = darkMode ? '#2d3748' : '#ffffff';
 
   return (
-    <div className="admin-dash-screen">
-      
-      {/* Header */}
-      <div className="admin-dash-header">
-        <div className="admin-dash-logo">
-          <HMISGlobe size={60} color="#1DB8C8" />
-          <span className="admin-dash-hmis">HMIS</span>
-          <HMISShieldLogo size={46} color="#1DB8C8" />
+    <div className="admin-dash-screen" style={{ background: bg, fontSize: `${fontSize}px`, minHeight: '100vh', position: 'relative' }}>
+
+      {/* ── HEADER ── */}
+      <div dir="ltr" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 16px', background: cardBg,
+        boxShadow: '0 1px 6px rgba(0,0,0,0.07)', position: 'relative', zIndex: 20,
+      }}>
+
+        {/* Left: hamburger */}
+        <div style={{ position: 'relative' }}>
+          <button
+            id="admin-menu-btn"
+            onClick={() => setMenuOpen(o => !o)}
+            style={{
+              width: 40, height: 40, borderRadius: '50%',
+              background: darkMode ? '#374151' : '#F0F4F8',
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="#178CA1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6"  x2="21" y2="6"  />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          {/* ── DROPDOWN MENU ── */}
+          {menuOpen && (
+            <>
+              {/* backdrop */}
+              <div
+                onClick={() => setMenuOpen(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 30 }}
+              />
+              <div style={{
+                position: 'absolute', top: 48, left: 0, zIndex: 40,
+                background: menuBg, borderRadius: 16,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                border: `1px solid ${border}`,
+                minWidth: 230, padding: '8px 0', overflow: 'hidden',
+              }}>
+
+                {/* Font Size */}
+                <div style={{ padding: '10px 18px 6px', borderBottom: `1px solid ${border}` }}>
+                  <span style={{ fontFamily: 'Cairo,sans-serif', fontWeight: 700, fontSize: 13, color: textSub }}>
+                    حجم الخط
+                  </span>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                    {FONT_SIZES.map(s => (
+                      <button
+                        key={s}
+                        onClick={() => setFontSize(s)}
+                        style={{
+                          width: 36, height: 36, borderRadius: 8,
+                          border: fontSize === s ? '2px solid #1DB8C8' : `1.5px solid ${border}`,
+                          background: fontSize === s ? '#e0f7fa' : 'transparent',
+                          color: fontSize === s ? '#178CA1' : textMain,
+                          fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                          transition: 'all .15s',
+                        }}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dark Mode */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 18px', borderBottom: `1px solid ${border}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 18 }}>{darkMode ? '🌙' : '☀️'}</span>
+                    <span style={{ fontFamily: 'Cairo,sans-serif', fontWeight: 700, fontSize: 14, color: textMain }}>
+                      {darkMode ? 'الوضع الداكن' : 'الوضع الفاتح'}
+                    </span>
+                  </div>
+                  {/* Toggle switch */}
+                  <div
+                    onClick={() => setDarkMode(!darkMode)}
+                    style={{
+                      width: 44, height: 24, borderRadius: 12,
+                      background: darkMode ? '#1DB8C8' : '#CBD5E0',
+                      position: 'relative', cursor: 'pointer',
+                      transition: 'background .25s',
+                    }}
+                  >
+                    <div style={{
+                      position: 'absolute', top: 3,
+                      left: darkMode ? 23 : 3,
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: '#fff',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                      transition: 'left .25s',
+                    }} />
+                  </div>
+                </div>
+
+                {/* Logout */}
+                <button
+                  onClick={() => { setMenuOpen(false); setScreen('login'); }}
+                  style={{
+                    width: '100%', padding: '14px 18px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    fontFamily: 'Cairo,sans-serif', fontWeight: 700, fontSize: 14,
+                    color: '#e53e3e', textAlign: 'right',
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="#e53e3e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  تسجيل الخروج
+                </button>
+              </div>
+            </>
+          )}
         </div>
-        <div className="admin-dash-profile">
-          <div className="admin-dash-profile-info">
-            <span className="admin-dash-role">المدير</span>
-            <span className="admin-dash-name">Admin</span>
+
+        {/* Center: HMIS */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <HMISGlobe size={48} color="#1DB8C8" />
+          <span style={{
+            fontFamily: 'Inter, sans-serif', fontSize: '28px',
+            fontWeight: 800, color: '#1DB8C8', letterSpacing: '1px',
+          }}>HMIS</span>
+          <HMISShieldLogo size={38} color="#1DB8C8" />
+        </div>
+
+        {/* Right: name + date + avatar + back btn */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <span style={{ fontFamily: 'Cairo, sans-serif', fontSize: '17px', fontWeight: 800, color: textMain, lineHeight: 1.2 }}>المدير</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 700, color: textMain, lineHeight: 1.2 }}>Admin</span>
+            <span style={{ fontFamily: 'Cairo, sans-serif', fontSize: '13px', fontWeight: 700, color: '#1DB8C8', marginTop: '2px' }}>الاثنين</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 600, color: textSub }}>10-3-2026</span>
           </div>
-          <img 
-            src="https://ui-avatars.com/api/?name=Admin&background=random&size=100" 
-            alt="Admin" 
+          <img
+            src="https://ui-avatars.com/api/?name=Admin&background=random&size=100"
+            alt="Admin"
             className="admin-dash-avatar"
           />
+          <button
+            onClick={() => setScreen('login')}
+            style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: `1.5px solid ${border}`,
+              background: cardBg,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke={textMain} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
-      </div>
-      
-      {/* Date */}
-      <div className="admin-dash-date-wrap">
-        <span className="admin-dash-day">الاثنين</span>
-        <span className="admin-dash-date">10-3-2026</span>
+
       </div>
 
-      {/* Scrollable Content */}
+      {/* ── SCROLLABLE CONTENT ── */}
       <div className="admin-dash-content">
-        
+
         {/* Stat Cards */}
         <div className="admin-stat-cards" dir="rtl">
           <div className="admin-stat-card" style={{ background: '#7498a5' }}>
@@ -91,18 +233,17 @@ export function AdminHome({ setScreen }: Props) {
           </div>
         </div>
 
-        {/* Chart Area Mockup */}
-        <div className="admin-chart-box">
+        {/* Chart */}
+        <div className="admin-chart-box" style={{ background: cardBg }}>
           <div className="admin-chart-header">
-            <span className="admin-chart-title">Appointments Over Time</span>
+            <span className="admin-chart-title" style={{ color: textMain }}>Appointments Over Time</span>
             <div className="admin-chart-legend">
               <span className="admin-chart-dot"></span>
-              <span className="admin-chart-label">Appointments</span>
+              <span className="admin-chart-label" style={{ color: textSub }}>Appointments</span>
             </div>
           </div>
-          {/* Mockup Chart Visual */}
           <div className="admin-chart-visual">
-            <div className="admin-chart-y">
+            <div className="admin-chart-y" style={{ color: textSub }}>
               <span>30</span><span>20</span><span>10</span><span>0</span>
             </div>
             <div className="admin-chart-graph">
@@ -137,58 +278,20 @@ export function AdminHome({ setScreen }: Props) {
               </svg>
             </div>
           </div>
-          <div className="admin-chart-x">
+          <div className="admin-chart-x" style={{ color: textSub }}>
             <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
           </div>
         </div>
 
-        {/* Appointments Section */}
-        <div className="admin-appointments-section" dir="rtl">
-          <h2 className="admin-appts-title">الكشفات</h2>
-          
-          <div className="admin-appts-table">
-            <div className="admin-appts-header">
-              <div style={{flex: 1.2}}>الاسم</div>
-              <div style={{flex: 1.5}}>الطبيب</div>
-              <div style={{flex: 1.5}}>المواعيد</div>
-              <div style={{flex: 1.5}}>موقع العيادة</div>
-              <div style={{flex: 1}}>الحجوزات</div>
-            </div>
 
-            <div className="admin-appts-list">
-              {appointments.map((appt) => (
-                <div key={appt.id} className="admin-appt-row">
-                  <div style={{flex: 1.2, color: '#178CA1', fontWeight: 700, fontSize: 15}}>{appt.name}</div>
-                  <div style={{flex: 1.5, display: 'flex', flexDirection: 'column', color: '#4A5568', fontSize: 14, fontWeight: 700}}>
-                    <span>{appt.doctor}</span>
-                    <span style={{fontSize: 12, fontWeight: 600}}>{appt.specialty}</span>
-                  </div>
-                  <div style={{flex: 1.5, display: 'flex', flexDirection: 'column', color: '#4A5568', fontSize: 13, fontWeight: 600}}>
-                    <span>{appt.date}</span>
-                    <span>{appt.time}</span>
-                  </div>
-                  <div style={{flex: 1.5, color: '#4A5568', fontWeight: 600, fontSize: 14}}>{appt.location}</div>
-                  <div style={{flex: 1}}>
-                    <button className="admin-appt-delete-btn" onClick={() => handleDelete(appt.id)}>حذف الحجز</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="admin-bottom-nav" dir="rtl">
-        <button className="admin-nav-item active">
-          ادارة الحسابات
-        </button>
-        <button className="admin-nav-item" onClick={() => setScreen('admin-patients')}>
-          ادارة المرضي
-        </button>
-        <button className="admin-nav-item" onClick={() => setScreen('admin-doctors')}>
-          ادارة الاطباء
-        </button>
+      <nav className="admin-bottom-nav" dir="rtl" style={{ background: cardBg, borderTop: `1px solid ${border}` }}>
+        <button className="admin-nav-item active">الاحصائيات</button>
+        <button className="admin-nav-item" onClick={() => setScreen('admin-patients')}>ادارة المرضي</button>
+        <button className="admin-nav-item" onClick={() => setScreen('admin-doctors')}>ادارة الاطباء</button>
+        <button className="admin-nav-item" onClick={() => setScreen('admin-appointments')}>مواعيد اليوم</button>
       </nav>
     </div>
   );

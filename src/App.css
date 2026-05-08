@@ -3458,14 +3458,14 @@ html, body {
   text-align: right;
 }
 .admin-detail-card {
-  background: #E8EEF5; border-radius: 16px; padding: 20px;
-  display: flex; flex-direction: column; gap: 12px;
+  background: #E8EEF5; border-radius: 16px; padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .admin-detail-row {
   display: flex; align-items: center; gap: 16px; justify-content: flex-end;
 }
 .admin-detail-value {
-  font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #A0AEC0;
+  font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; color: #A0AEC0;
 }
 .admin-detail-icon {
   background: #1A202C; color: white; width: 36px; height: 36px; border-radius: 8px;
@@ -3473,8 +3473,8 @@ html, body {
 }
 
 .admin-history-header {
-  font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 600; color: #4A5568;
-  text-align: right; margin-bottom: 16px;
+  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 600; color: #4A5568;
+  text-align: right; margin-bottom: 12px;
 }
 .admin-history-doctor {
   display: flex; align-items: center; gap: 12px; justify-content: flex-start;
@@ -3498,8 +3498,8 @@ html, body {
   color: #2B2E60; background: transparent; display: flex; align-items: center; justify-content: center;
 }
 .admin-history-details {
-  margin-top: 16px; text-align: right;
-  font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 600; color: #4A5568;
+  margin-top: 10px; text-align: right;
+  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 600; color: #4A5568;
 }
 .admin-history-details p { margin: 4px 0; }
 
@@ -3577,4 +3577,205 @@ html, body {
 }
 .admin-doc-location {
   font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 700; color: #A0AEC0;
+}
+
+/* ══════════════════════════════════════
+   ADMIN RADIOLOGY RECORD SCREEN
+══════════════════════════════════════ */
+.ard-patient-badge {
+  display: flex; align-items: center; gap: 14px;
+  padding: 20px 20px 12px;
+  direction: rtl;
+}
+.ard-patient-avatar {
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+.ard-patient-info {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.ard-patient-name {
+  font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 800; color: #178CA1;
+}
+.ard-patient-sub {
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; color: #A0AEC0;
+}
+
+.ard-count-chip {
+  display: inline-block;
+  background: #EEF0F8; border-radius: 50px;
+  padding: 4px 16px;
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: #7B5EA7;
+}
+
+.ard-list {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 12px 20px 32px;
+}
+
+.ard-card {
+  background: #F4F6FB;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  display: flex; flex-direction: column;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.ard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+.ard-img-wrap {
+  position: relative; width: 100%;
+}
+.ard-img {
+  width: 100%; height: 200px; object-fit: cover; display: block;
+}
+.ard-tag-badge {
+  position: absolute; bottom: 12px; right: 12px;
+  color: white; border-radius: 50px; padding: 4px 14px;
+  font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+
+.ard-info {
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  direction: rtl;
+}
+.ard-type {
+  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 800; color: #1A3A4A;
+}
+.ard-meta-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.ard-meta-text {
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; color: #A0AEC0;
+}
+.ard-print-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 4px; align-self: flex-start;
+  background: #EDF2F7; border: none; border-radius: 50px;
+  padding: 8px 18px;
+  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: #4A5568;
+  cursor: pointer; transition: background 0.18s;
+}
+.ard-print-btn:hover { background: #E2E8F0; }
+
+@media (min-width: 768px) {
+  .ard-list { padding: 12px 80px 40px; }
+  .ard-patient-badge { padding: 24px 80px 12px; }
+  .ard-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+}
+
+/* ══════════════════════════════════════
+   ADMIN DARK MODE — global cascade
+   Applied when .admin-dark-mode is on
+   the screen-wrap ancestor
+══════════════════════════════════════ */
+
+/* ── Screens & layout ── */
+.admin-dark-mode .admin-dash-screen         { background: #1a202c !important; color: #e2e8f0; }
+.admin-dark-mode .admin-dash-content        { background: #1a202c !important; }
+
+/* ── Headers ── */
+.admin-dark-mode .admin-detail-header       { background: #2d3748 !important; border-bottom-color: #4a5568 !important; }
+.admin-dark-mode .admin-detail-title        { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-detail-back         { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-detail-print        { color: #a0aec0 !important; }
+
+/* ── Cards ── */
+.admin-dark-mode .admin-detail-card         { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-detail-body         { background: #1a202c !important; }
+.admin-dark-mode .admin-detail-section-title{ color: #e2e8f0 !important; }
+.admin-dark-mode .admin-detail-value        { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-detail-icon         { color: #1DB8C8 !important; fill: #1DB8C8 !important; }
+.admin-dark-mode .admin-detail-icon-light   { color: #a0aec0 !important; }
+.admin-dark-mode .admin-detail-row          { border-bottom-color: #4a5568 !important; }
+
+/* ── Doctor detail ── */
+.admin-dark-mode .admin-doctor-detail-container { background: #1a202c !important; }
+.admin-dark-mode .admin-doc-detail-name     { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-doc-detail-spec     { color: #a0aec0 !important; }
+.admin-dark-mode .admin-doc-detail-bio      { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-doc-detail-bio-title{ color: #e2e8f0 !important; }
+.admin-dark-mode .admin-doc-detail-bio-text { color: #a0aec0 !important; }
+.admin-dark-mode .admin-doc-sched-days      { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-doc-sched-time      { color: #a0aec0 !important; }
+.admin-dark-mode .admin-doc-location        { color: #a0aec0 !important; }
+
+/* ── Patient detail cards ── */
+.admin-dark-mode .admin-patient-detail-card { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-patient-detail-name { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-rx-card             { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-rx-date             { color: #a0aec0 !important; }
+.admin-dark-mode .admin-rx-label            { color: #a0aec0 !important; }
+.admin-dark-mode .admin-rx-value            { color: #e2e8f0 !important; }
+
+/* ── Radiology record ── */
+.admin-dark-mode .ard-patient-badge         { background: #2d3748 !important; }
+.admin-dark-mode .ard-patient-name          { color: #e2e8f0 !important; }
+.admin-dark-mode .ard-patient-sub           { color: #a0aec0 !important; }
+.admin-dark-mode .ard-count-chip            { background: #374151 !important; color: #a0aec0 !important; }
+.admin-dark-mode .ard-card                  { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .ard-type                  { color: #e2e8f0 !important; }
+.admin-dark-mode .ard-meta-text             { color: #a0aec0 !important; }
+.admin-dark-mode .ard-print-btn             { background: #374151 !important; color: #e2e8f0 !important; }
+.admin-dark-mode .ard-print-btn:hover       { background: #4a5568 !important; }
+
+/* ── Patients / Doctors list ── */
+.admin-dark-mode .admin-patient-card        { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-patient-name        { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-patient-id          { color: #a0aec0 !important; }
+.admin-dark-mode .admin-patient-phone       { color: #a0aec0 !important; }
+.admin-dark-mode .admin-patient-date        { color: #a0aec0 !important; }
+.admin-dark-mode .admin-summary-card        { background: #2d3748 !important; }
+.admin-dark-mode .admin-summary-label       { color: #a0aec0 !important; }
+.admin-dark-mode .admin-summary-value       { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-search-bar          { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-search-input        { background: #2d3748 !important; color: #e2e8f0 !important; }
+.admin-dark-mode .admin-search-input::placeholder { color: #718096 !important; }
+
+/* ── Stat cards & chart ── */
+.admin-dark-mode .admin-chart-box           { background: #2d3748 !important; border-color: #4a5568 !important; }
+.admin-dark-mode .admin-chart-title         { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-chart-label         { color: #a0aec0 !important; }
+.admin-dark-mode .admin-appts-table         { background: #2d3748 !important; }
+.admin-dark-mode .admin-appts-title         { color: #e2e8f0 !important; }
+.admin-dark-mode .admin-appts-header        { color: #a0aec0 !important; border-bottom-color: #4a5568 !important; }
+.admin-dark-mode .admin-appt-row            { border-bottom-color: #4a5568 !important; }
+
+/* ── Bottom nav ── */
+.admin-dark-mode .admin-bottom-nav          { background: #2d3748 !important; border-top-color: #4a5568 !important; }
+.admin-dark-mode .admin-nav-item            { color: #a0aec0 !important; }
+.admin-dark-mode .admin-nav-item.active     { color: #1DB8C8 !important; }
+.admin-dark-mode .admin-nav-item:hover      { color: #1DB8C8 !important; }
+
+/* ── Clinic screen ── */
+.admin-dark-mode .admin-clinic-screen       { background: #1a202c !important; }
+.admin-dark-mode .admin-clinic-header       { background: #2d3748 !important; }
+
+/* Settings Popup Positioning */
+.settings-popup {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  width: 270px;
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1200px) {
+  .settings-popup {
+    bottom: auto;
+    top: calc(100% + 12px);
+  }
 }

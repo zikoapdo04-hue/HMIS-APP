@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen, PatientInfo } from '../../types';
+import { DoctorBottomNav } from '../../components/DoctorBottomNav';
 
 interface Props {
   setScreen: (s: Screen) => void;
@@ -83,18 +84,7 @@ export function DoctorHome({ setScreen, onSelectPatient }: Props) {
           {todayAppts.map(a => <Card key={a.id} {...a} />)}
         </div>
       </div>
-      <nav className="dash-nav">
-        <button className="dash-nav-icon" aria-label="profile" onClick={() => setScreen('doctor-profile')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
-        </button>
-        <button className="dash-nav-icon" aria-label="records" onClick={() => setScreen('doctor-records')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" /></svg>
-        </button>
-        <button id="home-btn" className="dash-nav-active" aria-label="home" dir="rtl">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg>
-          الرئيسية
-        </button>
-      </nav>
+      <DoctorBottomNav activeScreen="doctor-home" setScreen={setScreen} />
     </div>
   );
 }

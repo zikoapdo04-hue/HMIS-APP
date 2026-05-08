@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { Screen } from '../../types';
+import { DoctorBottomNav } from '../../components/DoctorBottomNav';
 
 interface Props { setScreen: (s: Screen) => void }
 
@@ -289,16 +290,7 @@ export function DoctorProfile({ setScreen }: Props) {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav dir="rtl" style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', flexShrink: 0 }}>
-        <button onClick={() => setScreen('doctor-home')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px' }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="black"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        </button>
-        <button style={{ padding: '14px 28px', border: 'none', borderRadius: '24px', background: '#168A9E', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-          <span style={{ fontFamily: 'Cairo', fontSize: '20px', fontWeight: 800 }}>الحساب</span>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        </button>
-      </nav>
+      <DoctorBottomNav activeScreen="doctor-profile" setScreen={setScreen} />
 
       {/* Scoped styles */}
       <style>{`

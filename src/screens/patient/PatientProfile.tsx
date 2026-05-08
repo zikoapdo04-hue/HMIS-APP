@@ -1,4 +1,6 @@
+import { useState, useRef } from 'react';
 import type { Screen } from '../../types';
+import { PatientBottomNav } from '../../components/PatientBottomNav';
 import { useAuth } from '../../context/AuthContext';
 
 interface Props { setScreen: (s: Screen) => void }
@@ -15,7 +17,7 @@ const APPOINTMENTS = [
   },
 ];
 
-const RECORDS = [
+const INITIAL_RECORDS = [
   {
     id: 'r1',
     date: '1-3-2026',
@@ -26,6 +28,7 @@ const RECORDS = [
     meds: 'Entresto',
     tests: 'التحليل والاشعات المطلوبة :',
     showXray: true,
+    uploadedImgs: [] as string[],
   },
   {
     id: 'r2',
@@ -37,6 +40,7 @@ const RECORDS = [
     meds: 'Prolia',
     tests: 'التحليل والاشعات المطلوبة :',
     showXray: true,
+    uploadedImgs: [] as string[],
   },
   {
     id: 'r3',
@@ -48,6 +52,7 @@ const RECORDS = [
     meds: 'Prolia',
     tests: 'التحليل والاشعات المطلوبة :',
     showXray: true,
+    uploadedImgs: [] as string[],
   },
 ];
 
@@ -59,8 +64,49 @@ const PRINT_ICON = (
 
 export function PatientProfile({ setScreen }: Props) {
   const { user } = useAuth();
+  const [records, setRecords] = useState(INITIAL_RECORDS);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeRecordId, setActiveRecordId] = useState<string | null>(null);
+
+  const handleImageClick = (recordId: string) => {
+    setActiveRecordId(recordId);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0 && activeRecordId) {
+      const newImgUrls = files.map(file => URL.createObjectURL(file));
+      
+      let allNewImgs: string[] = [];
+      setRecords(prev => {
+        const updated = prev.map(rec => {
+          if (rec.id === activeRecordId) {
+            allNewImgs = [...rec.uploadedImgs, ...newImgUrls];
+            return { ...rec, uploadedImgs: allNewImgs };
+          }
+          return rec;
+        });
+        
+        const globalRecords = JSON.parse(localStorage.getItem('patient_radiology_records') || '[]');
+        const toAdd = newImgUrls.map((url, idx) => ({
+          id: Date.now() + idx,
+          type: 'أشعة وتحاليل مرفقة',
+          date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-'),
+          doctor: 'مرسلة من المريض',
+          imageUrl: url,
+          tag: 'xray'
+        }));
+        localStorage.setItem('patient_radiology_records', JSON.stringify([...globalRecords, ...toAdd]));
+        
+        return updated;
+      });
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const patientName = user?.name ?? 'احمد محمد';
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=0e7490&color=fff&size=128`;
+  const avatarUrl = localStorage.getItem('global_patient_avatar') || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=0e7490&color=fff&size=128`;
 
   return (
     <div className="pp-screen" dir="rtl">
@@ -104,9 +150,44 @@ export function PatientProfile({ setScreen }: Props) {
           </div>
         ))}
 
+        {/* ── Radiology & Tests Button ── */}
+        <div dir="rtl" style={{ margin: '4px 0 16px' }}>
+          <button
+            onClick={() => setScreen('patient-radiology-record' as any)}
+            style={{
+              width: '100%', padding: '16px',
+              background: 'linear-gradient(135deg, #7B5EA7, #5B3F8A)',
+              color: 'white', border: 'none', borderRadius: '50px',
+              fontFamily: 'Cairo', fontSize: '18px', fontWeight: 800,
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: '10px',
+              boxShadow: '0 6px 20px rgba(123,94,167,0.35)',
+            }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            سجل الأشعة والتحاليل
+          </button>
+        </div>
+
         {/* ── Medical history section ── */}
         <h3 className="pp-section-title">التاريخ المرضي</h3>
-        {RECORDS.map(rec => (
+
+        {/* Hidden file input for xray uploads */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          style={{ display: 'none' }} 
+          accept="image/*" 
+          multiple
+          onChange={handleFileChange} 
+        />
+
+        {records.map(rec => (
           <div key={rec.id} className="pp-card" dir="rtl">
             {/* Print icon */}
             <div className="pp-print-icon">{PRINT_ICON}</div>
@@ -128,15 +209,31 @@ export function PatientProfile({ setScreen }: Props) {
             </div>
 
             {rec.showXray && (
-              <div className="pp-xray-wrap">
+              <div 
+                className="pp-xray-wrap" 
+                onClick={() => handleImageClick(rec.id)}
+                style={{ cursor: 'pointer', position: 'relative' }}
+              >
                 <img
-                  src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=300"
+                  src={rec.uploadedImgs.length > 0 ? rec.uploadedImgs[0] : "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=300"}
                   alt="X-Ray"
                   className="pp-xray-img"
+                  style={rec.uploadedImgs.length > 0 ? { opacity: 1, filter: 'none' } : {}}
                 />
-                <div className="pp-xray-plus">
-                  <div className="pp-plus-h" /><div className="pp-plus-v" />
-                </div>
+                {rec.uploadedImgs.length === 0 && (
+                  <div className="pp-xray-plus">
+                    <div className="pp-plus-h" /><div className="pp-plus-v" />
+                  </div>
+                )}
+                {rec.uploadedImgs.length > 0 && (
+                  <div style={{
+                    position: 'absolute', top: '8px', right: '8px', 
+                    background: 'rgba(29, 184, 200, 0.9)', color: 'white', 
+                    padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold'
+                  }}>
+                    تم ارسال {rec.uploadedImgs.length} صور للطبيب
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -144,29 +241,7 @@ export function PatientProfile({ setScreen }: Props) {
       </div>
 
       {/* ── Bottom nav ── */}
-      <nav className="dash-nav">
-        <button className="dash-nav-active" aria-label="account">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-          الحساب
-        </button>
-        <button className="dash-nav-icon" aria-label="appointments" onClick={() => setScreen('patient-appointments')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-        </button>
-        <button className="dash-nav-icon" aria-label="search" onClick={() => setScreen('patient-search')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-        </button>
-        <button className="dash-nav-icon" aria-label="home" onClick={() => setScreen('patient-home')}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-          </svg>
-        </button>
-      </nav>
+      <PatientBottomNav activeScreen="patient-profile" setScreen={setScreen} />
     </div>
   );
 }

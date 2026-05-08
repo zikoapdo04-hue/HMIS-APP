@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import './App.css';
 import type { Screen, Role, PatientInfo } from './types';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SettingsProvider, useSettings } from './context/SettingsContext';
 
 import { Splash } from './screens/Splash';
 import { Onboarding } from './screens/Onboarding';
@@ -33,9 +34,13 @@ import { AdminPatients } from './screens/admin/AdminPatients';
 import { AdminPatientDetail } from './screens/admin/AdminPatientDetail';
 import { AdminDoctorDetail } from './screens/admin/AdminDoctorDetail';
 import { AdminClinic } from './screens/admin/AdminClinic';
+import { AdminRadiologyRecord } from './screens/admin/AdminRadiologyRecord';
+import { AdminAppointments } from './screens/admin/AdminAppointments';
+import { PatientRadiology } from './screens/patient/PatientRadiology';
+
 
 const NO_BACK: Screen[] = [
-  'splash', 'onboarding', 'role'
+  'splash', 'onboarding', 'role', 'admin-home', 'admin-patients', 'admin-doctors', 'admin-appointments'
 ];
 const NO_HISTORY: Screen[] = ['splash', 'onboarding'];
 
@@ -52,6 +57,7 @@ function AppInner() {
   const [selectedPatient, setSelectedPatient] = useState<PatientInfo | null>(null);
   const historyStack = useRef<Screen[]>(['splash']);
   const sessionRouted = useRef(false);
+  const { darkMode, fontSize } = useSettings();
 
   /* Set document direction based on language */
   useEffect(() => {
@@ -142,16 +148,19 @@ function AppInner() {
       case 'admin-home':               return <AdminHome setScreen={nav} />;
       case 'admin-doctors':            return <AdminDoctors setScreen={nav} />;
       case 'admin-patients':           return <AdminPatients setScreen={nav} />;
+      case 'admin-appointments':       return <AdminAppointments setScreen={nav} />;
       case 'admin-patient-detail':     return <AdminPatientDetail setScreen={nav} patient={selectedPatient} />;
       case 'admin-doctor-detail':      return <AdminDoctorDetail setScreen={nav} />;
       case 'admin-clinic':             return <AdminClinic setScreen={nav} specialty={clinicSpecialty} color={clinicColor} />;
+      case 'admin-radiology-record':   return <AdminRadiologyRecord setScreen={nav} patient={selectedPatient} />;
+      case 'patient-radiology-record': return <PatientRadiology setScreen={nav} />;
       default:                         return null;
     }
   };
 
   return (
-    <div className="app-root">
-      <div className={`screen-wrap ${transitioning ? 'screen-fade-out' : 'screen-fade-in'}`}>
+    <div className="app-root" style={{ fontSize: `${fontSize}px` }}>
+      <div className={`screen-wrap ${transitioning ? 'screen-fade-out' : 'screen-fade-in'}${darkMode ? ' admin-dark-mode' : ''}`}>
         {renderScreen()}
       </div>
       {showBack && (
@@ -171,7 +180,9 @@ function AppInner() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppInner />
+      <SettingsProvider>
+        <AppInner />
+      </SettingsProvider>
     </AuthProvider>
   );
 }
