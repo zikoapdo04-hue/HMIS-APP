@@ -1,59 +1,42 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 
-interface SettingsContextValue {
-  fontSize: number;
-  setFontSize: (size: number) => void;
-  darkMode: boolean;
-  setDarkMode: (mode: boolean) => void;
+type Theme = 'light' | 'dark'
+type Lang  = 'ar' | 'en'
+
+interface SettingsValue {
+  theme:     Theme
+  lang:      Lang
+  setTheme:  (t: Theme) => void
+  setLang:   (l: Lang)  => void
+  dir:       'rtl' | 'ltr'
+  t:         (ar: string, en: string) => string
 }
 
-const SettingsContext = createContext<SettingsContextValue>({
-  fontSize: 14,
-  setFontSize: () => {},
-  darkMode: false,
-  setDarkMode: () => {}
-});
-
-export function useSettings() {
-  return useContext(SettingsContext);
-}
+const SettingsContext = createContext<SettingsValue | null>(null)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  // Try to load initial values from localStorage or default
-  const [fontSize, setFontSizeState] = useState<number>(() => {
-    const saved = localStorage.getItem('global_font_size');
-    return saved ? parseInt(saved, 10) : 14;
-  });
+  const [theme, setThemeState] = useState<Theme>(() => (localStorage.getItem('hmis-theme') as Theme) ?? 'light')
+  const [lang,  setLangState]  = useState<Lang>(()  => (localStorage.getItem('hmis-lang')  as Lang)  ?? 'ar')
 
-  const [darkMode, setDarkModeState] = useState<boolean>(() => {
-    return localStorage.getItem('global_dark_mode') === 'true';
-  });
+  const setTheme = (t: Theme) => { setThemeState(t); localStorage.setItem('hmis-theme', t) }
+  const setLang  = (l: Lang)  => { setLangState(l);  localStorage.setItem('hmis-lang',  l) }
 
-  // Keep localStorage in sync
-  const setFontSize = (size: number) => {
-    setFontSizeState(size);
-    localStorage.setItem('global_font_size', size.toString());
-  };
-
-  const setDarkMode = (mode: boolean) => {
-    setDarkModeState(mode);
-    localStorage.setItem('global_dark_mode', mode.toString());
-  };
-
-  // Add the admin-dark-mode class to body or provide it to App.tsx
-  // Since App.tsx wraps the app in `.screen-wrap`, we can just pass the state
-  // But we can also set the default body background for better coverage
   useEffect(() => {
-    if (darkMode) {
-      document.body.style.backgroundColor = '#1a202c';
-    } else {
-      document.body.style.backgroundColor = '#f7fafc';
-    }
-  }, [darkMode]);
+    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr')
+  }, [theme, lang])
+
+  const t = (ar: string, en: string) => lang === 'ar' ? ar : en
 
   return (
-    <SettingsContext.Provider value={{ fontSize, setFontSize, darkMode, setDarkMode }}>
+    <SettingsContext.Provider value={{ theme, lang, setTheme, setLang, dir: lang === 'ar' ? 'rtl' : 'ltr', t }}>
       {children}
     </SettingsContext.Provider>
-  );
+  )
+}
+
+export function useSettings(): SettingsValue {
+  const ctx = useContext(SettingsContext)
+  if (!ctx) throw new Error('useSettings must be inside <SettingsProvider>')
+  return ctx
 }

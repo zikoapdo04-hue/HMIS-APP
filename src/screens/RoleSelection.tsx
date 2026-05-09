@@ -23,10 +23,25 @@ export function RoleSelection({ setScreen, setRole }: Props) {
           <span className="role-logo-text">HMIS</span>
           <HMISShieldLogo size={46} />
         </div>
-        <div className="role-btn-group">
-          <p className="role-label">{t('auth.registerNow')}</p>
 
-          {/* Doctor */}
+        <div className="role-btn-group">
+          {/* Login — global, works for all roles */}
+          <button
+            id="login-btn"
+            className="role-btn role-btn-primary"
+            onClick={() => setScreen('login')}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DB8C8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span>{t('roleSelection.login')}</span>
+          </button>
+
+          <p className="role-label" style={{ marginTop: 20 }}>{t('auth.registerNow')}</p>
+
+          {/* Doctor register */}
           <button id="doctor-btn" className="role-btn" onClick={() => { setRole('doctor'); setScreen('register-doctor'); }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DB8C8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>
@@ -35,28 +50,14 @@ export function RoleSelection({ setScreen, setRole }: Props) {
             <span>{t('roleSelection.doctor')}</span>
           </button>
 
-          {/* Patient */}
+          {/* Patient register */}
           <button id="patient-btn" className="role-btn" onClick={() => { setRole('patient'); setScreen('register'); }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DB8C8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>
             </svg>
             <span>{t('roleSelection.patient')}</span>
           </button>
-
-          {/* Admin */}
-          <button id="admin-btn" className="role-btn role-btn-admin" onClick={() => { setRole('admin'); setScreen('admin-home'); }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1DB8C8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-            </svg>
-            <span>{t('roleSelection.admin')}</span>
-          </button>
         </div>
-
-        <p className="role-login-link">
-          {t('roleSelection.haveAccount')}
-          <span onClick={() => setScreen('login')}>{t('roleSelection.login')}</span>
-        </p>
       </div>
     </div>
   );

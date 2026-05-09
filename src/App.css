@@ -9,6 +9,43 @@
   --navy2: #2C5F6E;
   --gray: #8AAAB0;
   --white: #ffffff;
+
+  /* Light mode (default) */
+  --bg:             #F4FAFC;
+  --card:           #FFFFFF;
+  --card-border:    rgba(13,155,171,0.12);
+  --input-bg:       #EDF6F8;
+  --text-primary:   #0F2B35;
+  --text-sec:       #4A6572;
+  --text-muted:     #8AAAB4;
+  --nav-bg:         #FFFFFF;
+  --nav-border:     #E8F2F5;
+  --nav-inactive:   #94A3B8;
+  --shadow-card:    0 2px 12px rgba(13,155,171,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-card-hov:0 6px 24px rgba(13,155,171,0.15), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-nav:     0 -4px 20px rgba(0,0,0,0.06);
+  --dropdown-bg:    #FFFFFF;
+  --dropdown-border:rgba(13,155,171,0.15);
+  --dropdown-item-hover: #F0FBFC;
+}
+
+[data-theme="dark"] {
+  --bg:             #0A1A1F;
+  --card:           #122028;
+  --card-border:    rgba(13,155,171,0.20);
+  --input-bg:       #1A2E36;
+  --text-primary:   #E2F4F7;
+  --text-sec:       #8BB8C4;
+  --text-muted:     #4A6E7A;
+  --nav-bg:         #0E1E25;
+  --nav-border:     rgba(13,155,171,0.18);
+  --nav-inactive:   #4A6E7A;
+  --shadow-card:    0 2px 12px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2);
+  --shadow-card-hov:0 6px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-nav:     0 -4px 20px rgba(0,0,0,0.3);
+  --dropdown-bg:    #122028;
+  --dropdown-border:rgba(13,155,171,0.25);
+  --dropdown-item-hover: #1A2E36;
 }
 
 /* ── RESET ── */
@@ -3458,14 +3495,14 @@ html, body {
   text-align: right;
 }
 .admin-detail-card {
-  background: #E8EEF5; border-radius: 16px; padding: 12px 16px;
-  display: flex; flex-direction: column; gap: 10px;
+  background: #E8EEF5; border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
 }
 .admin-detail-row {
   display: flex; align-items: center; gap: 16px; justify-content: flex-end;
 }
 .admin-detail-value {
-  font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; color: #A0AEC0;
+  font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #A0AEC0;
 }
 .admin-detail-icon {
   background: #1A202C; color: white; width: 36px; height: 36px; border-radius: 8px;
@@ -3473,8 +3510,8 @@ html, body {
 }
 
 .admin-history-header {
-  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 600; color: #4A5568;
-  text-align: right; margin-bottom: 12px;
+  font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 600; color: #4A5568;
+  text-align: right; margin-bottom: 16px;
 }
 .admin-history-doctor {
   display: flex; align-items: center; gap: 12px; justify-content: flex-start;
@@ -3498,8 +3535,8 @@ html, body {
   color: #2B2E60; background: transparent; display: flex; align-items: center; justify-content: center;
 }
 .admin-history-details {
-  margin-top: 10px; text-align: right;
-  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 600; color: #4A5568;
+  margin-top: 16px; text-align: right;
+  font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 600; color: #4A5568;
 }
 .admin-history-details p { margin: 4px 0; }
 
@@ -3579,203 +3616,420 @@ html, body {
   font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 700; color: #A0AEC0;
 }
 
-/* ══════════════════════════════════════
-   ADMIN RADIOLOGY RECORD SCREEN
-══════════════════════════════════════ */
-.ard-patient-badge {
-  display: flex; align-items: center; gap: 14px;
-  padding: 20px 20px 12px;
-  direction: rtl;
-}
-.ard-patient-avatar {
-  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  flex-shrink: 0;
-}
-.ard-patient-info {
-  display: flex; flex-direction: column; gap: 2px;
-}
-.ard-patient-name {
-  font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 800; color: #178CA1;
-}
-.ard-patient-sub {
-  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; color: #A0AEC0;
-}
+/* ══════════════════════════════════════════════════════════════
+   UI ENHANCEMENT LAYER  — global polish pass
+   Override specific base rules to lift visual quality
+══════════════════════════════════════════════════════════════ */
 
-.ard-count-chip {
-  display: inline-block;
-  background: #EEF0F8; border-radius: 50px;
-  padding: 4px 16px;
-  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: #7B5EA7;
+/* ── DOCTOR HOME: welcome banner ── */
+.dash-welcome {
+  background: linear-gradient(135deg, #f0fbfd 0%, #daf5f9 100%);
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 4px 16px rgba(29,184,200,0.08);
 }
-
-.ard-list {
-  display: flex; flex-direction: column; gap: 16px;
-  padding: 12px 20px 32px;
+.dash-doctor-avatar img {
+  border: 3px solid #1DB8C8;
 }
+.dash-greeting-name { color: #0e7490; }
 
-.ard-card {
-  background: #F4F6FB;
+/* ── DOCTOR HOME: appointment cards ── */
+.dash-card {
+  background: linear-gradient(135deg, #f0fbfd 0%, #e6f7fc 100%);
+  border: 1.5px solid rgba(29,184,200,0.15);
   border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  display: flex; flex-direction: column;
+  box-shadow: 0 4px 16px rgba(29,184,200,0.08);
+}
+.dash-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(29,184,200,0.14);
+  border-color: rgba(29,184,200,0.28);
+}
+.dash-card-name { color: #0e7490; }
+.dash-card-num {
+  background: rgba(29,184,200,0.12);
+  color: #0e7490;
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+/* ── DOCTOR HOME: bottom nav ── */
+.dash-nav {
+  border-top: 1.5px solid #e8f4f8;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+.dash-nav-icon { border-radius: 12px; transition: background 0.18s, color 0.18s; }
+.dash-nav-icon:hover { background: #e8f4f8; color: #0e7490; }
+.dash-nav-active {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(29,184,200,0.32);
+}
+
+/* ── RECORDS top bar ── */
+.records-top-bar {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+}
+
+/* ── PATIENT PROFILE header ── */
+.pp-header {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+}
+.pp-avatar { border-color: rgba(255,255,255,0.7); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.pp-patient-name { color: #0e7490; }
+.pp-contact-btn { color: #0e7490; }
+.pp-section-title { color: #0e7490; }
+
+/* ── PATIENT PROFILE: cards ── */
+.pp-card {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.13);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(29,184,200,0.07);
+}
+.pp-card-doctor-name { color: #0e7490; }
+
+/* ── PATIENT APPOINTMENTS: card ── */
+.appt-card {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.13);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(29,184,200,0.07);
+}
+.appt-doctor-name { color: #0e7490; }
+.appt-delete-btn {
+  background: linear-gradient(135deg, #c53030, #e53e3e);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(197,48,48,0.22);
   transition: transform 0.18s, box-shadow 0.18s;
 }
-.ard-card:hover {
+.appt-delete-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 8px 20px rgba(197,48,48,0.3);
 }
 
-.ard-img-wrap {
-  position: relative; width: 100%;
-}
-.ard-img {
-  width: 100%; height: 200px; object-fit: cover; display: block;
-}
-.ard-tag-badge {
-  position: absolute; bottom: 12px; right: 12px;
-  color: white; border-radius: 50px; padding: 4px 14px;
-  font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
-  backdrop-filter: blur(4px);
+/* ── SEARCH top bar ── */
+.search-top-bar {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+  border-radius: 0 0 24px 24px;
 }
 
-.ard-info {
-  padding: 16px 18px;
-  display: flex; flex-direction: column; gap: 8px;
-  direction: rtl;
+/* ── SEARCH: doctor result cards ── */
+.clinic-card {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.13);
+  border-radius: 22px;
+  box-shadow: 0 4px 16px rgba(29,184,200,0.08);
 }
-.ard-type {
-  font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 800; color: #1A3A4A;
+.clinic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(29,184,200,0.14);
+  border-color: rgba(29,184,200,0.25);
 }
-.ard-meta-row {
-  display: flex; align-items: center; gap: 8px;
+.clinic-dr-name { color: #0e7490; }
+
+/* ── BOOKING SCREEN ── */
+.booking-header {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+  border-radius: 0 0 24px 24px;
 }
-.ard-meta-text {
-  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; color: #A0AEC0;
+.bk-doc-card {
+  background: linear-gradient(135deg, #f0fbfd 0%, #e6f7fc 100%);
+  border: 1.5px solid rgba(29,184,200,0.15);
+  border-radius: 22px;
+  box-shadow: 0 4px 16px rgba(29,184,200,0.08);
 }
-.ard-print-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  margin-top: 4px; align-self: flex-start;
-  background: #EDF2F7; border: none; border-radius: 50px;
-  padding: 8px 18px;
-  font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; color: #4A5568;
-  cursor: pointer; transition: background 0.18s;
+.bk-doc-name { color: #0e7490; }
+.bk-input {
+  background: #f0f8fb;
+  border: 1.5px solid rgba(29,184,200,0.15);
+  border-radius: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.ard-print-btn:hover { background: #E2E8F0; }
-
-@media (min-width: 768px) {
-  .ard-list { padding: 12px 80px 40px; }
-  .ard-patient-badge { padding: 24px 80px 12px; }
-  .ard-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.bk-input:focus {
+  outline: none;
+  border-color: rgba(29,184,200,0.4);
+  box-shadow: 0 0 0 3px rgba(29,184,200,0.1);
+}
+.bk-time-pill.active {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 12px rgba(29,184,200,0.32);
+}
+.bk-time-pill.inactive { background: #f0f8fb; color: #8AAAB0; border: 1.5px solid rgba(29,184,200,0.12); }
+.bk-confirm-submit {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  border-radius: 50px;
+  box-shadow: 0 8px 24px rgba(29,184,200,0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 18px;
+}
+.bk-confirm-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(29,184,200,0.44);
 }
 
-/* ══════════════════════════════════════
-   ADMIN DARK MODE — global cascade
-   Applied when .admin-dark-mode is on
-   the screen-wrap ancestor
-══════════════════════════════════════ */
+/* ── BOOKING SUCCESS ── */
+.booking-success-screen {
+  background: linear-gradient(160deg, #f0fbfd 0%, #e2f8fc 100%);
+}
+.return-home-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  border-radius: 50px;
+  box-shadow: 0 8px 24px rgba(29,184,200,0.32);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.return-home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(29,184,200,0.44);
+}
 
-/* ── Screens & layout ── */
-.admin-dark-mode .admin-dash-screen         { background: #1a202c !important; color: #e2e8f0; }
-.admin-dark-mode .admin-dash-content        { background: #1a202c !important; }
+/* ── DOCTOR DETAIL ── */
+.doctor-detail-screen { background: #f5fbfd; }
+.dd-book-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 10px 28px rgba(29,184,200,0.38);
+}
 
-/* ── Headers ── */
-.admin-dark-mode .admin-detail-header       { background: #2d3748 !important; border-bottom-color: #4a5568 !important; }
-.admin-dark-mode .admin-detail-title        { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-detail-back         { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-detail-print        { color: #a0aec0 !important; }
-
-/* ── Cards ── */
-.admin-dark-mode .admin-detail-card         { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-detail-body         { background: #1a202c !important; }
-.admin-dark-mode .admin-detail-section-title{ color: #e2e8f0 !important; }
-.admin-dark-mode .admin-detail-value        { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-detail-icon         { color: #1DB8C8 !important; fill: #1DB8C8 !important; }
-.admin-dark-mode .admin-detail-icon-light   { color: #a0aec0 !important; }
-.admin-dark-mode .admin-detail-row          { border-bottom-color: #4a5568 !important; }
-
-/* ── Doctor detail ── */
-.admin-dark-mode .admin-doctor-detail-container { background: #1a202c !important; }
-.admin-dark-mode .admin-doc-detail-name     { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-doc-detail-spec     { color: #a0aec0 !important; }
-.admin-dark-mode .admin-doc-detail-bio      { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-doc-detail-bio-title{ color: #e2e8f0 !important; }
-.admin-dark-mode .admin-doc-detail-bio-text { color: #a0aec0 !important; }
-.admin-dark-mode .admin-doc-sched-days      { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-doc-sched-time      { color: #a0aec0 !important; }
-.admin-dark-mode .admin-doc-location        { color: #a0aec0 !important; }
-
-/* ── Patient detail cards ── */
-.admin-dark-mode .admin-patient-detail-card { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-patient-detail-name { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-rx-card             { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-rx-date             { color: #a0aec0 !important; }
-.admin-dark-mode .admin-rx-label            { color: #a0aec0 !important; }
-.admin-dark-mode .admin-rx-value            { color: #e2e8f0 !important; }
-
-/* ── Radiology record ── */
-.admin-dark-mode .ard-patient-badge         { background: #2d3748 !important; }
-.admin-dark-mode .ard-patient-name          { color: #e2e8f0 !important; }
-.admin-dark-mode .ard-patient-sub           { color: #a0aec0 !important; }
-.admin-dark-mode .ard-count-chip            { background: #374151 !important; color: #a0aec0 !important; }
-.admin-dark-mode .ard-card                  { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .ard-type                  { color: #e2e8f0 !important; }
-.admin-dark-mode .ard-meta-text             { color: #a0aec0 !important; }
-.admin-dark-mode .ard-print-btn             { background: #374151 !important; color: #e2e8f0 !important; }
-.admin-dark-mode .ard-print-btn:hover       { background: #4a5568 !important; }
-
-/* ── Patients / Doctors list ── */
-.admin-dark-mode .admin-patient-card        { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-patient-name        { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-patient-id          { color: #a0aec0 !important; }
-.admin-dark-mode .admin-patient-phone       { color: #a0aec0 !important; }
-.admin-dark-mode .admin-patient-date        { color: #a0aec0 !important; }
-.admin-dark-mode .admin-summary-card        { background: #2d3748 !important; }
-.admin-dark-mode .admin-summary-label       { color: #a0aec0 !important; }
-.admin-dark-mode .admin-summary-value       { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-search-bar          { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-search-input        { background: #2d3748 !important; color: #e2e8f0 !important; }
-.admin-dark-mode .admin-search-input::placeholder { color: #718096 !important; }
-
-/* ── Stat cards & chart ── */
-.admin-dark-mode .admin-chart-box           { background: #2d3748 !important; border-color: #4a5568 !important; }
-.admin-dark-mode .admin-chart-title         { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-chart-label         { color: #a0aec0 !important; }
-.admin-dark-mode .admin-appts-table         { background: #2d3748 !important; }
-.admin-dark-mode .admin-appts-title         { color: #e2e8f0 !important; }
-.admin-dark-mode .admin-appts-header        { color: #a0aec0 !important; border-bottom-color: #4a5568 !important; }
-.admin-dark-mode .admin-appt-row            { border-bottom-color: #4a5568 !important; }
-
-/* ── Bottom nav ── */
-.admin-dark-mode .admin-bottom-nav          { background: #2d3748 !important; border-top-color: #4a5568 !important; }
-.admin-dark-mode .admin-nav-item            { color: #a0aec0 !important; }
-.admin-dark-mode .admin-nav-item.active     { color: #1DB8C8 !important; }
-.admin-dark-mode .admin-nav-item:hover      { color: #1DB8C8 !important; }
-
-/* ── Clinic screen ── */
-.admin-dark-mode .admin-clinic-screen       { background: #1a202c !important; }
-.admin-dark-mode .admin-clinic-header       { background: #2d3748 !important; }
-
-/* Settings Popup Positioning */
-.settings-popup {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  top: auto;
-  left: 50%;
-  transform: translateX(-50%);
+/* ── ADMIN DASHBOARD home ── */
+.admin-dash-header {
+  border-bottom: 1.5px solid #e8f4f8;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.admin-stat-card { box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-radius: 20px; }
+.admin-chart-box {
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-  width: 270px;
-  z-index: 100;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.admin-appts-table { border-radius: 24px; background: #f0f8fb; }
+.admin-appt-row {
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid rgba(29,184,200,0.08);
+}
+.admin-appt-delete-btn {
+  background: linear-gradient(135deg, #c53030, #e53e3e);
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(197,48,48,0.2);
+  padding: 8px 10px;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.admin-appt-delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(197,48,48,0.28);
 }
 
-@media (min-width: 1200px) {
-  .settings-popup {
-    bottom: auto;
-    top: calc(100% + 12px);
-  }
+/* ── ADMIN PATIENTS / DOCTORS ── */
+.admin-patient-card {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.12);
+  box-shadow: 0 4px 16px rgba(29,184,200,0.07);
+  border-radius: 22px;
+  transition: transform 0.18s, box-shadow 0.18s;
 }
+.admin-patient-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(29,184,200,0.12);
+}
+.admin-patient-avatar { border: 3px solid rgba(29,184,200,0.2); }
+.admin-patient-name { color: #0e7490; font-size: 19px; }
+.admin-btn-view {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 12px rgba(29,184,200,0.28);
+  border-radius: 14px;
+  padding: 8px 14px;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.admin-btn-view:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(29,184,200,0.36);
+}
+.admin-btn-delete {
+  background: linear-gradient(135deg, #c53030, #e53e3e);
+  box-shadow: 0 4px 10px rgba(197,48,48,0.22);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.admin-btn-delete:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(197,48,48,0.3); }
+.admin-btn-edit {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 10px rgba(29,184,200,0.25);
+}
+
+/* ── ADMIN bottom nav ── */
+.admin-bottom-nav {
+  border-top: 1.5px solid #e8f4f8;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  padding: 12px 16px;
+  gap: 8px;
+}
+.admin-nav-item {
+  border-radius: 16px;
+  font-size: 14px;
+  transition: all 0.2s;
+  padding: 14px 0;
+}
+.admin-nav-item.active {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 6px 18px rgba(29,184,200,0.3);
+  color: #fff;
+}
+.admin-nav-item:hover:not(.active) { background: #daedf2; color: #0e7490; }
+
+/* ── ADMIN SUMMARY CARD ── */
+.admin-summary-card {
+  background: linear-gradient(135deg, #f0fbfd 0%, #e2f5f9 100%);
+  border: 1.5px solid rgba(29,184,200,0.14);
+  box-shadow: 0 4px 16px rgba(29,184,200,0.08);
+  border-radius: 24px;
+}
+.admin-summary-value { color: #0e7490; }
+
+/* ── ADMIN SEARCH BAR ── */
+.admin-search-bar {
+  background: #f0f8fb;
+  border: 1.5px solid rgba(29,184,200,0.15);
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(29,184,200,0.07);
+  padding: 8px 14px;
+}
+.admin-search-icon-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 12px rgba(29,184,200,0.28);
+  border-radius: 14px;
+  color: #fff;
+}
+
+/* ── AUTH: input focus glow ── */
+.auth-input:focus {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(29,184,200,0.18);
+}
+.auth-submit-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 10px 28px rgba(29,184,200,0.38);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(29,184,200,0.48);
+}
+
+/* ── NOTIF top bar ── */
+.notif-top-bar {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+  border-radius: 0 0 24px 24px;
+}
+
+/* ── PATIENT DETAIL (admin) ── */
+.admin-detail-header {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  box-shadow: 0 4px 20px rgba(14,116,144,0.25);
+}
+.admin-detail-name { color: #0e7490; }
+.admin-detail-card {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.12);
+  box-shadow: 0 4px 14px rgba(29,184,200,0.07);
+  border-radius: 20px;
+}
+
+/* ── PP (PatientProfile) settings button hint ── */
+.pp-settings-btn { opacity: 0.85; transition: opacity 0.2s; }
+.pp-settings-btn:hover { opacity: 1; }
+
+/* ── Scrollbar global tightening ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(29,184,200,0.2) transparent;
+}
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: rgba(29,184,200,0.25); border-radius: 4px; }
+
+/* ── Loading text ── */
+.loading-text {
+  text-align: center;
+  font-family: 'Cairo', sans-serif;
+  color: #8AAAB0;
+  padding: 24px;
+  font-size: 16px;
+}
+
+/* ── DOCTOR PROFILE avatar border enhancement ── */
+.dr-profile-avatar { border: 3px solid #1DB8C8; }
+
+/* ── SETTINGS rows ── */
+.settings-row {
+  background: linear-gradient(135deg, #f5fbfd 0%, #eaf5f8 100%);
+  border: 1.5px solid rgba(29,184,200,0.12);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(29,184,200,0.06);
+  transition: box-shadow 0.18s;
+}
+.settings-row:hover { box-shadow: 0 4px 16px rgba(29,184,200,0.12); }
+.settings-label { color: #0e7490; }
+
+/* ── LOGOUT button ── */
+.logout-btn {
+  background: linear-gradient(135deg, #c53030, #e53e3e);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(197,48,48,0.25);
+}
+.logout-btn:hover {
+  box-shadow: 0 10px 28px rgba(197,48,48,0.35);
+  transform: translateY(-2px);
+}
+
+/* ── BOOK NOW button inside doctor detail ── */
+.book-now-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  border-radius: 50px;
+  box-shadow: 0 8px 24px rgba(29,184,200,0.32);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.book-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(29,184,200,0.44);
+}
+
+/* ── ADMIN HOME date ── */
+.admin-dash-date { color: #6b8e9a; font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 700; }
+
+/* ── DOCTOR DETAIL hero card ── */
+.dd-hero-card {
+  box-shadow: 0 16px 48px rgba(14,116,144,0.3);
+}
+.dd-info-card { border: 1.5px solid rgba(29,184,200,0.1); }
+
+/* ── p-search icon button white icon ── */
+.p-search-btn {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(29,184,200,0.28);
+}
+.p-search-btn svg { stroke: #fff; }
+
+/* ── PATIENT HOME navigation ── */
+.dash-nav-active[style*="background"] {
+  background: linear-gradient(135deg, #0e7490, #1DB8C8) !important;
+}
+
+/* ── Admin doctors approve button ── */
+.admin-btn-edit[style*="D1FAE5"] {
+  background: linear-gradient(135deg, #065f46, #10b981) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+}
+
+/* ── Role selection admin button ── */
+.role-btn-admin { border-color: rgba(29,184,200,0.4) !important; }
+
+/* ── Smooth hover transitions everywhere ── */
+button { transition: transform 0.18s ease, box-shadow 0.18s ease; }
+button:active { transform: scale(0.97) !important; }

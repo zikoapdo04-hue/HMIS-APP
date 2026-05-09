@@ -3,44 +3,34 @@ import { useTranslation } from 'react-i18next';
 import './App.css';
 import type { Screen, Role, PatientInfo } from './types';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SettingsProvider, useSettings } from './context/SettingsContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 import { Splash } from './screens/Splash';
 import { Onboarding } from './screens/Onboarding';
 import { RoleSelection } from './screens/RoleSelection';
 import { Login } from './screens/auth/Login';
-import { AdminLogin } from './screens/auth/AdminLogin';
 import { Register } from './screens/auth/Register';
 import { RegisterDoctor } from './screens/auth/RegisterDoctor';
-import { DoctorHome } from './screens/doctor/DoctorHome';
-import { DoctorRecords } from './screens/doctor/DoctorRecords';
-import { DoctorProfile } from './screens/doctor/DoctorProfile';
-import { DoctorSettings } from './screens/doctor/DoctorSettings';
-import { PatientHome } from './screens/patient/PatientHome';
-import { PatientProfile } from './screens/patient/PatientProfile';
-import { PatientSearch } from './screens/patient/PatientSearch';
+import { DoctorShell } from './screens/doctor/DoctorShell';
+import { PatientShell } from './screens/patient/PatientShell';
 import { Clinics } from './screens/patient/Clinics';
 import { Notifications } from './screens/patient/Notifications';
 import { BookAppointment } from './screens/patient/BookAppointment';
 import { DoctorDetail } from './screens/patient/DoctorDetail';
 import type { DoctorInfo } from './screens/patient/DoctorDetail';
 import { BookingSuccess } from './screens/patient/BookingSuccess';
-import { PatientAppointments } from './screens/patient/PatientAppointments';
 import { PatientSettings } from './screens/patient/PatientSettings';
 import { PatientAccountSettings } from './screens/patient/PatientAccountSettings';
-import { AdminHome } from './screens/admin/AdminHome';
-import { AdminDoctors } from './screens/admin/AdminDoctors';
-import { AdminPatients } from './screens/admin/AdminPatients';
+import { AdminShell } from './screens/admin/AdminShell';
 import { AdminPatientDetail } from './screens/admin/AdminPatientDetail';
 import { AdminDoctorDetail } from './screens/admin/AdminDoctorDetail';
-import { AdminClinic } from './screens/admin/AdminClinic';
-import { AdminRadiologyRecord } from './screens/admin/AdminRadiologyRecord';
-import { AdminAppointments } from './screens/admin/AdminAppointments';
-import { PatientRadiology } from './screens/patient/PatientRadiology';
-
+import type { UserModel } from './models/user.model';
 
 const NO_BACK: Screen[] = [
-  'splash', 'onboarding', 'role', 'admin-home', 'admin-patients', 'admin-doctors', 'admin-appointments'
+  'splash', 'onboarding', 'role',
+  'patient-home', 'patient-search', 'patient-appointments', 'patient-profile',
+  'doctor-home', 'doctor-records', 'doctor-profile',
+  'admin-home', 'admin-doctors', 'admin-patients',
 ];
 const NO_HISTORY: Screen[] = ['splash', 'onboarding'];
 
@@ -50,20 +40,46 @@ function AppInner() {
   const { t, i18n } = useTranslation();
   const [screen, setScreen] = useState<Screen>('splash');
   const [role, setRole] = useState<Role>('patient');
-  const [transitioning, setTransitioning] = useState(false);
   const [clinicSpecialty, setClinicSpecialty] = useState('');
-  const [clinicColor] = useState('#1DB8C8');
+
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorInfo | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientInfo | null>(null);
+  const [selectedAdminDoctor, setSelectedAdminDoctor] = useState<UserModel | null>(null);
   const historyStack = useRef<Screen[]>(['splash']);
   const sessionRouted = useRef(false);
-  const { darkMode, fontSize } = useSettings();
 
   /* Set document direction based on language */
   useEffect(() => {
     document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
+
+  const goBack = useCallback(() => {
+    const stack = historyStack.current;
+    if (stack.length > 1) {
+      stack.pop();
+      setScreen(stack[stack.length - 1]);
+    }
+  }, []);
+
+  const nav = useCallback((s: Screen) => {
+    const stack = historyStack.current;
+    if (!NO_HISTORY.includes(s)) {
+      const top = stack[stack.length - 1];
+      const PATIENT_TABS: Screen[] = ['patient-home','patient-search','patient-appointments','patient-profile'];
+      const DOCTOR_TABS:  Screen[] = ['doctor-home','doctor-records','doctor-profile'];
+      const ADMIN_TABS:   Screen[] = ['admin-home','admin-doctors','admin-patients'];
+      if (PATIENT_TABS.includes(top) && !PATIENT_TABS.includes(s)) {
+        stack[stack.length - 1] = 'patient-home';
+      } else if (DOCTOR_TABS.includes(top) && !DOCTOR_TABS.includes(s)) {
+        stack[stack.length - 1] = 'doctor-home';
+      } else if (ADMIN_TABS.includes(top) && !ADMIN_TABS.includes(s)) {
+        stack[stack.length - 1] = 'admin-home';
+      }
+      stack.push(s);
+    }
+    setScreen(s);
+  }, []);
 
   /* Auto-route when Firebase session is restored */
   useEffect(() => {
@@ -73,43 +89,10 @@ function AppInner() {
       const home: Screen =
         user.role === 'doctor' ? 'doctor-home' :
         user.role === 'admin'  ? 'admin-home'  : 'patient-home';
-      setRole(user.role);
-      setScreen(home);
+      setRole(user.role as Role);
+      nav(home);
     }
-  }, [user, loading]);
-
-  const goBack = useCallback(() => {
-    const stack = historyStack.current;
-    if (stack.length > 1) {
-      stack.pop();
-      const prev = stack[stack.length - 1];
-      setTransitioning(true);
-      setTimeout(() => { setScreen(prev); setTransitioning(false); }, 180);
-    }
-  }, []);
-
-  const nav = useCallback((s: Screen) => {
-    setTransitioning(true);
-    setTimeout(() => {
-      setScreen(s);
-      setTransitioning(false);
-      if (!NO_HISTORY.includes(s)) {
-        historyStack.current.push(s);
-        window.history.pushState({ screen: s }, '', `#${s}`);
-      }
-    }, 180);
-  }, []);
-
-  
-  useEffect(() => {
-    const onPop = () => goBack();
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, [goBack]);
-
-  useEffect(() => {
-    window.history.replaceState({ screen: 'splash' }, '', '#splash');
-  }, []);
+  }, [user, loading, nav]);
 
   const showBack = !NO_BACK.includes(screen) && historyStack.current.length > 1;
 
@@ -127,40 +110,35 @@ function AppInner() {
       case 'splash':                   return <Splash setScreen={nav} />;
       case 'onboarding':               return <Onboarding setScreen={nav} />;
       case 'role':                     return <RoleSelection setScreen={nav} setRole={setRole} />;
-      case 'login':                    return role === 'admin' ? <AdminLogin setScreen={nav} /> : <Login setScreen={nav} role={role} />;
+      case 'login':                    return <Login setScreen={nav} role={role} />;
       case 'register':                 return <Register setScreen={nav} role={role} />;
       case 'register-doctor':          return <RegisterDoctor setScreen={nav} role={role} />;
-      case 'clinics':                  return <Clinics setScreen={nav} specialty={clinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
-      case 'doctor-home':              return <DoctorHome setScreen={nav} onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} />;
-      case 'doctor-records':           return <DoctorRecords setScreen={nav} onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} />;
-      case 'doctor-profile':           return <DoctorProfile setScreen={nav} />;
-      case 'doctor-settings':          return <DoctorSettings setScreen={nav} />;
-      case 'patient-home':             return <PatientHome setScreen={nav} setSpecialty={setClinicSpecialty} />;
-      case 'patient-profile':          return <PatientProfile setScreen={nav} />;
-      case 'patient-search':           return <PatientSearch setScreen={nav} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
-      case 'notifications':            return <Notifications setScreen={nav} />;
-      case 'doctor-detail':            return <DoctorDetail setScreen={nav} doctor={selectedDoctor} />;
-      case 'book-appointment':         return <BookAppointment setScreen={nav} doctor={selectedDoctor} />;
-      case 'booking-success':          return <BookingSuccess setScreen={nav} />;
-      case 'patient-appointments':     return <PatientAppointments setScreen={nav} />;
-      case 'patient-settings':         return <PatientSettings setScreen={nav} />;
-      case 'patient-account-settings': return <PatientAccountSettings setScreen={nav} />;
-      case 'admin-home':               return <AdminHome setScreen={nav} />;
-      case 'admin-doctors':            return <AdminDoctors setScreen={nav} />;
-      case 'admin-patients':           return <AdminPatients setScreen={nav} />;
-      case 'admin-appointments':       return <AdminAppointments setScreen={nav} />;
-      case 'admin-patient-detail':     return <AdminPatientDetail setScreen={nav} patient={selectedPatient} />;
-      case 'admin-doctor-detail':      return <AdminDoctorDetail setScreen={nav} />;
-      case 'admin-clinic':             return <AdminClinic setScreen={nav} specialty={clinicSpecialty} color={clinicColor} />;
-      case 'admin-radiology-record':   return <AdminRadiologyRecord setScreen={nav} patient={selectedPatient} />;
-      case 'patient-radiology-record': return <PatientRadiology setScreen={nav} />;
+      case 'clinics':                  return <Clinics setScreen={nav} onBack={goBack} specialty={clinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
+      case 'doctor-home':              return <DoctorShell setScreen={nav} initialTab="home"    onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} />;
+      case 'doctor-records':           return <DoctorShell setScreen={nav} initialTab="records" onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} />;
+      case 'doctor-profile':           return <DoctorShell setScreen={nav} initialTab="profile" onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} />;
+      case 'patient-home':             return <PatientShell setScreen={nav} initialTab="home"         setSpecialty={setClinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
+      case 'patient-search':           return <PatientShell setScreen={nav} initialTab="search"       setSpecialty={setClinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
+      case 'patient-appointments':     return <PatientShell setScreen={nav} initialTab="appointments" setSpecialty={setClinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
+      case 'patient-profile':          return <PatientShell setScreen={nav} initialTab="profile"      setSpecialty={setClinicSpecialty} onSelectDoctor={(d) => { setSelectedDoctor(d); nav('doctor-detail'); }} />;
+      case 'notifications':            return <Notifications setScreen={nav} onBack={goBack} />;
+      case 'doctor-detail':            return <DoctorDetail setScreen={nav} onBack={goBack} doctor={selectedDoctor} />;
+      case 'book-appointment':         return <BookAppointment setScreen={nav} onBack={goBack} doctor={selectedDoctor} />;
+      case 'booking-success':          return <BookingSuccess setScreen={nav} onBack={goBack} />;
+      case 'patient-settings':         return <PatientSettings setScreen={nav} onBack={goBack} />;
+      case 'patient-account-settings': return <PatientAccountSettings setScreen={nav} onBack={goBack} />;
+      case 'admin-home':           return <AdminShell setScreen={nav} initialTab="home"     onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} onSelectDoctor={(d) => { setSelectedAdminDoctor(d); nav('admin-doctor-detail'); }} />;
+      case 'admin-doctors':        return <AdminShell setScreen={nav} initialTab="doctors"  onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} onSelectDoctor={(d) => { setSelectedAdminDoctor(d); nav('admin-doctor-detail'); }} />;
+      case 'admin-patients':       return <AdminShell setScreen={nav} initialTab="patients" onSelectPatient={(p) => { setSelectedPatient(p); nav('admin-patient-detail'); }} onSelectDoctor={(d) => { setSelectedAdminDoctor(d); nav('admin-doctor-detail'); }} />;
+      case 'admin-patient-detail': return <AdminPatientDetail setScreen={nav} patient={selectedPatient} onBack={goBack} />;
+      case 'admin-doctor-detail':  return <AdminDoctorDetail  setScreen={nav} doctor={selectedAdminDoctor} onBack={goBack} />;
       default:                         return null;
     }
   };
 
   return (
-    <div className="app-root" style={{ fontSize: `${fontSize}px` }}>
-      <div className={`screen-wrap ${transitioning ? 'screen-fade-out' : 'screen-fade-in'}${darkMode ? ' admin-dark-mode' : ''}`}>
+    <div className="app-root">
+      <div className="screen-wrap screen-fade-in">
         {renderScreen()}
       </div>
       {showBack && (
@@ -179,10 +157,10 @@ function AppInner() {
 /* ─── Root export ──────────────────────────────────────── */
 export default function App() {
   return (
-    <AuthProvider>
-      <SettingsProvider>
+    <SettingsProvider>
+      <AuthProvider>
         <AppInner />
-      </SettingsProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </SettingsProvider>
   );
 }

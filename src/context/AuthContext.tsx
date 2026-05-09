@@ -1,64 +1,63 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { Role } from '../types';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { AuthService } from '../services/auth.service'
+import type { UserModel } from '../models/user.model'
 
-export interface UserProfile {
-  uid:       string;
-  email:     string;
-  role:      Role;
-  name:      string;
-  // patient extras
-  city?:     string;
-  age?:      string;
-  phone?:    string;
-  // doctor extras
-  specialty?: string;
-  hospital?:  string;
-  address?:   string;
-  rating?:    number;
-  days?:      string;
-  // shared
-  photoURL?:  string;
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// AuthContext — wraps Firebase Auth state.
+// UI components use useAuth(); they never touch the Firebase SDK directly.
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface AuthContextValue {
-  user:       UserProfile | null;
-  loading:    boolean;
-  login:      (profile: UserProfile) => void;
-  logout:     () => void;
-  updateUser: (updates: Partial<UserProfile>) => void;
+  user:       UserModel | null
+  loading:    boolean
+  login:      (email: string, password: string) => Promise<UserModel | null>
+  logout:     () => Promise<void>
+  updateUser: (partial: Partial<UserModel>) => void
 }
 
-const AuthContext = createContext<AuthContextValue>({
-  user: null, loading: true, login: () => {}, logout: () => {}, updateUser: () => {}
-});
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
+const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser]       = useState<UserModel | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(false);
-  }, []);
+    const unsubscribe = AuthService.onAuthStateChanged(async firebaseUser => {
+      if (firebaseUser) {
+        const profile = await AuthService.getCurrentUserProfile(firebaseUser.uid)
+        setUser(profile)
+      } else {
+        setUser(null)
+      }
+      setLoading(false)
+    })
+    return unsubscribe
+  }, [])
 
-  const login = (profile: UserProfile) => {
-    setUser(profile);
-  };
+  async function login(email: string, password: string): Promise<UserModel | null> {
+    const profile = await AuthService.login(email, password)
+    setUser(profile)
+    return profile
+  }
 
-  const logout = () => {
-    setUser(null);
-  };
+  async function logout(): Promise<void> {
+    await AuthService.logout()
+    setUser(null)
+  }
 
-  const updateUser = (updates: Partial<UserProfile>) => {
-    setUser(prev => prev ? { ...prev, ...updates } : prev);
-  };
+  function updateUser(partial: Partial<UserModel>): void {
+    setUser(prev => (prev ? { ...prev, ...partial } : prev))
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
-  );
+  )
+}
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
+  return ctx
 }

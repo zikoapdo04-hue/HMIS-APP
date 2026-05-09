@@ -25,18 +25,14 @@ export type Screen =
   | 'admin-patients'
   | 'admin-patient-detail'
   | 'admin-doctor-detail'
-  | 'admin-clinic'
-  | 'admin-radiology-record'
-  | 'admin-appointments'
-  | 'patient-radiology-record';
+  | 'admin-clinic';
 
 export type Role = 'doctor' | 'patient' | 'admin';
 
 export interface PatientInfo {
-  id:       string;
-  name:     string;
-  phone:    string;
-  email:    string;
-  num:      number;
-  photoURL?: string;
+  id:    string;
+  name:  string;
+  phone: string;
+  email: string;
+  num:   number;
 }

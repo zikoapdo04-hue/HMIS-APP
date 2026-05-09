@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Screen, Role } from '../../types';
+import type { Screen } from '../../types';
 import { HMISGlobe, HMISShieldLogo, EyeOpen, EyeOff } from '../../components/Icons';
 import { useAuth } from '../../context/AuthContext';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 
-interface Props { setScreen: (s: Screen) => void; role: Role }
+interface Props { setScreen: (s: Screen) => void; role?: string }
 
-export function Login({ setScreen, role }: Props) {
+export function Login({ setScreen }: Props) {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -16,34 +16,22 @@ export function Login({ setScreen, role }: Props) {
   const { login } = useAuth();
   const { t } = useTranslation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) { setError(t('auth.errEmpty')); return; }
-
-    if (role === 'admin') {
-      if (email !== 'admin@hmis.com' || password !== 'admin123') {
-        setError(t('auth.errAdmin'));
-        return;
-      }
-    }
-
     setLoading(true);
     setError('');
-    
-    setTimeout(() => {
-      // Mock login validation
-      login({
-        uid: Math.random().toString(),
-        email: email,
-        name: 'مستخدم تجريبي',
-        role: role
-      });
-      
+    try {
+      const user = await login(email, password);
+      if (!user) { setError(t('auth.errEmpty')); return; }
       const home: Screen =
-        role === 'doctor' ? 'doctor-home' :
-        role === 'admin'  ? 'admin-home'  : 'patient-home';
+        user.role === 'doctor' ? 'doctor-home' :
+        user.role === 'admin'  ? 'admin-home'  : 'patient-home';
       setScreen(home);
+    } catch {
+      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (

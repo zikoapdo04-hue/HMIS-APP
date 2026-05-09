@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import type { Screen, PatientInfo } from '../../types';
 
 interface Props {
   setScreen: (s: Screen) => void;
   patient?:  PatientInfo | null;
+  onBack?:   () => void;
 }
 
 interface Prescription {
@@ -15,26 +17,105 @@ interface Prescription {
   doctorName: string;
 }
 
-export function AdminPatientDetail({ setScreen, patient }: Props) {
+export function AdminPatientDetail({ setScreen, patient, onBack }: Props) {
+  const { user } = useAuth();
   const patientName  = patient?.name  ?? 'احمد محمد';
   const patientEmail = patient?.email ?? 'ahmed@gmail.com';
   const patientPhone = patient?.phone ?? '01234567890';
   const patientId    = patient?.id    ?? '387';
-  const avatarUrl    = patient?.photoURL || localStorage.getItem('global_patient_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=random&size=150`;
 
-  const [prescriptions] = useState<Prescription[]>([
+  const [showModal, setShowModal]   = useState(false);
+  const [condition, setCondition]   = useState('');
+  const [meds, setMeds]             = useState('');
+  const [tests, setTests]           = useState('');
+
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([
     { id: 1, date: '1-3-2026',  condition: '', meds: 'Aspirin',      tests: '', doctorName: 'دكتور مصطفي محمد' },
     { id: 2, date: '8-3-2026',  condition: '', meds: 'Osteoporosis', tests: '', doctorName: 'دكتور مصطفي محمد' },
     { id: 3, date: '20-3-2026', condition: '', meds: 'Prolia',       tests: '', doctorName: 'دكتور يوسف يحي'  },
   ]);
 
+  const today    = new Date();
+  const todayStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+  const doctorName = user?.name ?? 'الطبيب';
+
+  const handleSave = () => {
+    if (!condition && !meds && !tests) return;
+    setPrescriptions(prev => [
+      { id: Date.now(), date: todayStr, condition, meds, tests, doctorName: `د. ${doctorName}` },
+      ...prev,
+    ]);
+    setCondition(''); setMeds(''); setTests('');
+    setShowModal(false);
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', border: '1.5px solid #CBD5E0', borderRadius: '12px',
+    padding: '12px 16px', fontFamily: 'Cairo', fontSize: '15px',
+    outline: 'none', background: '#F8FAFC', color: '#1A202C',
+    resize: 'none', direction: 'rtl',
+  };
+
   return (
     <div className="admin-dash-screen" style={{ overflowY: 'auto' }}>
 
+      {/* ── Prescription Modal ── */}
+      {showModal && (
+        <div
+          onClick={() => setShowModal(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            dir="rtl"
+            style={{ background: '#fff', borderRadius: '24px', width: '100%', maxWidth: '480px', padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontFamily: 'Cairo', fontSize: '22px', fontWeight: 800, color: '#178CA1', margin: 0 }}>كتابة روشتة</h2>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A0AEC0', fontSize: '24px', lineHeight: 1 }}>✕</button>
+            </div>
+
+            <p style={{ fontFamily: 'Cairo', fontSize: '15px', color: '#718096', margin: 0 }}>
+              المريض : <strong style={{ color: '#1A202C' }}>{patientName}</strong>
+            </p>
+
+            <div>
+              <label style={{ fontFamily: 'Cairo', fontSize: '14px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '6px' }}>حالة الحالة</label>
+              <textarea rows={2} style={inputStyle} placeholder="اكتب تشخيص الحالة..." value={condition} onChange={e => setCondition(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontFamily: 'Cairo', fontSize: '14px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '6px' }}>الأدوية المطلوبة</label>
+              <textarea rows={2} style={inputStyle} placeholder="اكتب الأدوية..." value={meds} onChange={e => setMeds(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontFamily: 'Cairo', fontSize: '14px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '6px' }}>التحاليل والاشعاعات المطلوبة</label>
+              <textarea rows={2} style={inputStyle} placeholder="اكتب التحاليل المطلوبة..." value={tests} onChange={e => setTests(e.target.value)} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleSave}
+                style={{ flex: 1, padding: '14px', background: 'linear-gradient(135deg,#1DB8C8,#0E8A96)', color: 'white', border: 'none', borderRadius: '50px', fontFamily: 'Cairo', fontSize: '16px', fontWeight: 800, cursor: 'pointer' }}
+              >
+                حفظ الروشتة
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ flex: 1, padding: '14px', background: '#EDF2F7', color: '#4A5568', border: 'none', borderRadius: '50px', fontFamily: 'Cairo', fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="admin-detail-header" dir="rtl">
-        <button className="admin-detail-back" onClick={() => setScreen('admin-patients')}>
+        <button className="admin-detail-back" onClick={() => onBack ? onBack() : setScreen('admin-patients')}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(180deg)' }}>
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -56,7 +137,7 @@ export function AdminPatientDetail({ setScreen, patient }: Props) {
         <div className="admin-detail-profile">
           <span className="admin-detail-name">{patientName}</span>
           <img
-            src={avatarUrl}
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=random&size=150`}
             alt={patientName}
             className="admin-detail-avatar"
           />
@@ -89,30 +170,29 @@ export function AdminPatientDetail({ setScreen, patient }: Props) {
           </div>
         </div>
 
-        {/* ── Radiology & Tests Button ── */}
-        <div dir="rtl" style={{ margin: '4px 0 0' }}>
+        {/* ── Write Prescription Button ── */}
+        <div dir="rtl" style={{ margin: '16px 0' }}>
           <button
-            onClick={() => setScreen('admin-radiology-record')}
+            onClick={() => setShowModal(true)}
             style={{
               width: '100%', padding: '16px',
-              background: 'linear-gradient(135deg, #7B5EA7, #5B3F8A)',
+              background: 'linear-gradient(135deg, #1DB8C8, #0E8A96)',
               color: 'white', border: 'none', borderRadius: '50px',
               fontFamily: 'Cairo', fontSize: '18px', fontWeight: 800,
               cursor: 'pointer', display: 'flex', alignItems: 'center',
               justifyContent: 'center', gap: '10px',
-              boxShadow: '0 6px 20px rgba(123,94,167,0.35)',
+              boxShadow: '0 6px 20px rgba(29,184,200,0.38)',
             }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            سجل الأشعة والتحاليل
+            كتابة روشتة
           </button>
         </div>
 
+        {/* Medical History */}
         <div className="admin-detail-section" dir="rtl">
           <h2 className="admin-detail-section-title">التاريخ المرضي</h2>
 
@@ -144,8 +224,6 @@ export function AdminPatientDetail({ setScreen, patient }: Props) {
                 {rx.meds      && <p>الادوية المطلوبة : {rx.meds}</p>}
                 {rx.tests     && <p style={{ marginTop: 8 }}>التحاليل والاشعات : {rx.tests}</p>}
               </div>
-
-
             </div>
           ))}
         </div>

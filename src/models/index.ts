@@ -1,0 +1,7 @@
+export type { UserModel, UserDTO } from './user.model'
+export type { SpecialtyModel } from './specialty.model'
+export type { AppointmentModel, AppointmentDTO } from './appointment.model'
+export type { NotificationModel, NotificationDTO } from './notification.model'
+export type { BillModel, BillDTO } from './bill.model'
+export type { TimeSlotModel, TimeSlotDTO } from './time-slot.model'
+export type { PrescriptionModel } from './prescription.model'

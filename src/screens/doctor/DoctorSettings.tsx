@@ -9,7 +9,7 @@ export function DoctorSettings({ setScreen }: Props) {
   const fields = [
     { label: 'الاسم',      value: user?.name      ?? '—' },
     { label: 'رقم الهاتف', value: user?.phone     ?? '—' },
-    { label: 'المدينة',    value: user?.address   ?? '—' },
+    { label: 'المدينة',    value: user?.city      ?? '—' },
     { label: 'التخصص',    value: user?.specialty  ?? '—' },
     { label: 'مستشفي',    value: user?.hospital   ?? '—' },
   ];
