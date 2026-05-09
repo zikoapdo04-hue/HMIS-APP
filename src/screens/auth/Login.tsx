@@ -17,13 +17,19 @@ export function Login({ setScreen }: Props) {
   const { t } = useTranslation();
 
   const handleLogin = async () => {
+  const handleLogin = async () => {
     if (!email || !password) { setError(t('auth.errEmpty')); return; }
     setLoading(true);
     setError('');
     try {
       const user = await login(email, password);
       if (!user) { setError(t('auth.errEmpty')); return; }
+    try {
+      const user = await login(email, password);
+      if (!user) { setError(t('auth.errEmpty')); return; }
       const home: Screen =
+        user.role === 'doctor' ? 'doctor-home' :
+        user.role === 'admin'  ? 'admin-home'  : 'patient-home';
         user.role === 'doctor' ? 'doctor-home' :
         user.role === 'admin'  ? 'admin-home'  : 'patient-home';
       setScreen(home);
@@ -31,6 +37,7 @@ export function Login({ setScreen }: Props) {
       setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
     } finally {
       setLoading(false);
+    }
     }
   };
 
